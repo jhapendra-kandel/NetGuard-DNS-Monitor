@@ -1,0 +1,2 @@
+dnslib
+#tkinter --> usually they are already in python lib so its not needed to install
