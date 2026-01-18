@@ -3,6 +3,7 @@ Real-time DNS monitoring with intelligent threat detection and ad-blocking
 
 Developed as a Final Year Cybersecurity Project demonstrating advanced network security concepts, threat detection algorithms, and system optimization techniques.
 
+<hr>
 Features
 
 Core Monitoring
@@ -12,6 +13,21 @@ Live Traffic Analysis - Instant visibility into network activity
 Advanced Filtering - Search and filter by domain, IP, or query type
 Visual Statistics - Comprehensive charts and graphs for traffic analysis.
 
+Security Features
+
+Anomaly Detection - Automatic detection of suspicious patterns:
+
+Excessive queries (DDoS/malware indicators)
+Suspicious domain keywords
+Unusual traffic patterns
+
+
+Real-time Security Alerts - Severity-based threat notifications
+Blocklist/Allowlist Management - Granular domain control
+Network-wide Protection - Single point of control for all devices
+
+
+<hr>
 
 Analytics & Reporting
 
