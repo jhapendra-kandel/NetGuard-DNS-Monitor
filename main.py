@@ -9,10 +9,13 @@ log_queue = queue.Queue()
 
 all_logs = []
 
+domain_blocklist = []  # e.g., ['example.com', 'sub.example.com']
+ip_blacklist = []  # e.g., ['192.168.1.100']
+
 if __name__ == "__main__":
    
-    dns_thread = threading.Thread(target=start_dns_server, args=(log_queue, all_logs), daemon=True)
+    dns_thread = threading.Thread(target=start_dns_server, args=(log_queue, all_logs, domain_blocklist, ip_blacklist), daemon=True)
     dns_thread.start()
 
-   
-    create_gui(log_queue, all_logs)
+   # Start GUI on main thread
+    create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist)
