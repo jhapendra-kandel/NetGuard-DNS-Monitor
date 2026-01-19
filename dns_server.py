@@ -68,6 +68,10 @@ def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, 
     except Exception as e:
         print(f"Error handling DNS: {e}")
 
+            # Prevent memory bloat - keep only last 5000 logs
+    if len(all_logs) > 5000:
+        all_logs.pop(0)  # Remove oldest entry
+
 def start_dns_server(log_queue, all_logs, domain_blocklist, ip_blacklist):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
