@@ -1,4 +1,8 @@
 # dns_server.py
+"""
+DNS Server Module
+Handles incoming DNS requests, blocking, forwarding, and logging.
+"""
 import socket
 import threading
 from dnslib import DNSHeader, DNSRecord, QTYPE, DNSLabel, RR, A
