@@ -1,4 +1,8 @@
 # gui.py
+"""
+GUI Module
+Tkinter-based interface for live logs, statistics, and blocklist management.
+"""
 import tkinter as tk
 from tkinter import ttk
 import queue

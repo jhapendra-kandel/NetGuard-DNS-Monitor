@@ -1,3 +1,7 @@
+"""
+Statistics Module
+Computes and formats DNS query statistics for display.
+"""
 from collections import Counter
 import datetime
 
