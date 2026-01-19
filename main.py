@@ -1,3 +1,4 @@
+__version__ = "0.2.1"
 import threading
 import queue
 from dns_server import start_dns_server
