@@ -15,6 +15,14 @@ ip_blacklist = []  # e.g., ['192.168.1.100']
 
 if __name__ == "__main__":
    
+    print("""
+    ╔════════════════════════════════════════════╗
+    ║     NetGuard DNS Monitor v0.2.0            ║
+    ║  Real-time DNS Monitoring & Protection     ║
+    ╚════════════════════════════════════════════╝
+    Starting DNS server on port 53...
+    """)
+
     print("NetGuard DNS Monitor v" + __version__)
     print("Starting DNS server and GUI...")
 
