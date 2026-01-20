@@ -63,6 +63,12 @@ def update_stats(stats_frame, all_logs):
         domain_canvas.draw()
         domain_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
+    unique_ips = len(set(log[1] for log in all_logs))
+    unique_domains = len(set(log[2] for log in all_logs))
+
+    stats_str += f"\nUnique Active Devices: {unique_ips}\n"
+    stats_str += f"Unique Domains Queried: {unique_domains}\n"        
+
 def add_domain(entry, listbox, blocklist):
     domain = entry.get().strip()
     if domain and domain not in blocklist:
