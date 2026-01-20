@@ -98,6 +98,19 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     notebook = ttk.Notebook(root)
     notebook.pack(expand=True, fill='both')
 
+        # Status bar with live counters
+    status_bar = tk.Label(root, text="Queries: 0 | Blocked: 0 | Safe: 0", bd=1, relief=tk.SUNKEN, anchor=tk.W)
+    status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+
+    def update_status_bar():
+        total = len(all_logs)
+        blocked = sum(1 for log in all_logs if log[-1] in ['blocked_ip', 'blocked_domain'])
+        safe = sum(1 for log in all_logs if log[-1] == 'safe')
+        status_bar.config(text=f"Queries: {total} | Blocked: {blocked} | Safe: {safe}")
+        root.after(3000, update_status_bar)  # Update every 3 seconds
+
+    update_status_bar()
+
     # Logs Tab
     logs_frame = ttk.Frame(notebook)
     notebook.add(logs_frame, text='Live Logs')
