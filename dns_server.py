@@ -1,19 +1,14 @@
 # dns_server.py
-"""
-DNS Server Module
-Handles incoming DNS requests, blocking, forwarding, and logging.
-"""
 import socket
 import threading
 from dnslib import DNSHeader, DNSRecord, QTYPE, DNSLabel, RR, A
 import datetime
 
-UPSTREAM_DNS = '8.8.8.8'  # Or '1.1.1.1'
+UPSTREAM_DNS = '8.8.8.8'
 DNS_PORT = 53
-SINKHOLE_IP = '0.0.0.0'  # Or use '127.0.0.1' for local sinkhole
+SINKHOLE_IP = '0.0.0.0'
 
 def is_domain_blocked(query_name, blocklist):
-    # Check exact match or subdomain (*.example.com style, but simple check)
     query_name = query_name.rstrip('.')
     for blocked in blocklist:
         if query_name == blocked or query_name.endswith('.' + blocked):
@@ -23,55 +18,70 @@ def is_domain_blocked(query_name, blocklist):
 def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, ip_blacklist):
     try:
         request = DNSRecord.parse(data)
-        query_name = str(request.q.qname).rstrip('.')  # e.g., 'example.com'
-        query_type = QTYPE.get(request.q.qtype, 'UNKNOWN')  # e.g., 'A'
-        
+        query_name = str(request.q.qname).rstrip('.')
+        query_type = QTYPE.get(request.q.qtype, 'UNKNOWN')
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         src_ip = addr[0]
-        status = 'safe'  # Default
+        status = 'safe'
         details = f'Forwarded to {UPSTREAM_DNS}'
-        
+
         if src_ip in ip_blacklist:
             status = 'blocked_ip'
             details = 'Blocked: IP blacklisted'
-            # Create NXDOMAIN response
             reply = request.reply()
             reply.header.rcode = getattr(DNSHeader.RCODE, 'NXDOMAIN')
             sock.sendto(reply.pack(), addr)
+
         elif is_domain_blocked(query_name, domain_blocklist):
             status = 'blocked_domain'
             details = 'Blocked: Domain blacklisted'
-            # Sinkhole response (return sinkhole IP for A/AAAA queries)
             reply = request.reply()
             if request.q.qtype in (QTYPE.A, QTYPE.AAAA):
                 reply.add_answer(RR(request.q.qname, request.q.qtype, rdata=A(SINKHOLE_IP)))
             else:
                 reply.header.rcode = getattr(DNSHeader.RCODE, 'NXDOMAIN')
             sock.sendto(reply.pack(), addr)
+
         else:
-            # Forward to upstream
-            upstream_sock.settimeout(2.0)  # 2 second timeout
-            upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            upstream_sock.sendto(data, (UPSTREAM_DNS, DNS_PORT))
-            response, _ = upstream_sock.recvfrom(4096)
-            upstream_sock.close()
-            sock.sendto(response, addr)
-        
-        # Log to console for debugging
+            # Forward to upstream with timeout and 1 retry
+            success = False
+            for attempt in range(2):
+                try:
+                    upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    upstream_sock.settimeout(2.0)
+                    upstream_sock.sendto(data, (UPSTREAM_DNS, DNS_PORT))
+                    response, _ = upstream_sock.recvfrom(4096)
+                    upstream_sock.close()
+                    sock.sendto(response, addr)
+                    success = True
+                    details = f'Forwarded (attempt {attempt+1})'
+                    break
+                except socket.timeout:
+                    details = f'Timeout (attempt {attempt+1}/2)'
+                    print(f"Timeout from {src_ip}: {query_name}")
+                    if attempt == 1:
+                        reply = request.reply()
+                        reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
+                        sock.sendto(reply.pack(), addr)
+                        details = 'Failed after retries'
+                except Exception as e:
+                    details = f'Error: {str(e)[:30]}'
+                    print(f"Upstream error from {src_ip}: {query_name} - {e}")
+                    if attempt == 1:
+                        reply = request.reply()
+                        reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
+                        sock.sendto(reply.pack(), addr)
+
+            if not success:
+                status = 'failed'
+
         print(f"DNS Query from {src_ip}: {query_name} ({query_type}) - {details}")
-        
-        # Put log into queue for GUI (add status for coloring)
         log_entry = (timestamp, src_ip, query_name, query_type, details, status)
         log_queue.put(log_entry)
-        
-        # Append to all_logs for stats
         all_logs.append(log_entry)
+
     except Exception as e:
         print(f"Error handling DNS: {e}")
-
-            # Prevent memory bloat - keep only last 5000 logs
-    if len(all_logs) > 5000:
-        all_logs.pop(0)  # Remove oldest entry
 
 def start_dns_server(log_queue, all_logs, domain_blocklist, ip_blacklist):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
