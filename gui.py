@@ -98,7 +98,7 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     notebook = ttk.Notebook(root)
     notebook.pack(expand=True, fill='both')
 
-        # Status bar with live counters
+    # Status bar with live counters
     status_bar = tk.Label(root, text="Queries: 0 | Blocked: 0 | Safe: 0", bd=1, relief=tk.SUNKEN, anchor=tk.W)
     status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
@@ -122,6 +122,23 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     tree.heading('Type', text='Type')
     tree.heading('Details', text='Details')
     tree.pack(expand=True, fill='both')
+
+        # Pause/Resume functionality
+    paused = [False]  # Mutable for nonlocal access
+
+    def toggle_pause():
+        paused[0] = not paused[0]
+        pause_btn.config(text="Resume Logs" if paused[0] else "Pause Logs")
+        status = "PAUSED" if paused[0] else "Running"
+        messagebox.showinfo("Logging Status", f"Logging is now {status}")
+
+    pause_btn = ttk.Button(logs_frame, text="Pause Logs", command=toggle_pause)
+    pause_btn.pack(pady=5, padx=10)
+
+    # Modify update_logs to respect pause
+    # Add at the very top of update_logs function:
+    if paused[0]:
+        return
 
     # Color tags
     tree.tag_configure('safe', background='lightgreen')
