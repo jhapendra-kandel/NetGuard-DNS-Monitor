@@ -4,6 +4,7 @@ GUI Module
 Tkinter-based interface for live logs, statistics, and blocklist management.
 """
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import ttk
 import queue
 from stats import compute_stats, create_bar_chart
