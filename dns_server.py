@@ -50,6 +50,7 @@ def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, 
             sock.sendto(reply.pack(), addr)
         else:
             # Forward to upstream
+            upstream_sock.settimeout(2.0)  # 2 second timeout
             upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             upstream_sock.sendto(data, (UPSTREAM_DNS, DNS_PORT))
             response, _ = upstream_sock.recvfrom(4096)
