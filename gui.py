@@ -4,7 +4,8 @@ GUI Module
 Tkinter-based interface for live logs, statistics, and blocklist management.
 """
 import tkinter as tk
-from tkinter import messagebox
+import csv
+from tkinter import filedialog, messagebox
 from tkinter import ttk
 import queue
 from stats import compute_stats, create_bar_chart
@@ -124,8 +125,28 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     tree.heading('Details', text='Details')
     tree.pack(expand=True, fill='both')
 
-        # Pause/Resume functionality
+    # Pause/Resume functionality
     paused = [False]  # Mutable for nonlocal access
+
+    def export_logs():
+        if not all_logs:
+            messagebox.showinfo("No Data", "No logs to export yet.")
+            return
+        file = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv")],
+            title="Export DNS Logs"
+        )
+        if file:
+            with open(file, 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details', 'Status'])
+                for log in all_logs:
+                    writer.writerow(log)
+            messagebox.showinfo("Success", f"Exported {len(all_logs)} logs to {file}")
+
+    export_btn = ttk.Button(logs_frame, text="Export Logs to CSV", command=export_logs)
+    export_btn.pack(pady=5, padx=10)
 
     def toggle_pause():
         paused[0] = not paused[0]
