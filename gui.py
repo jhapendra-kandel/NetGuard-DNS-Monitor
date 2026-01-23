@@ -1,3 +1,4 @@
+# gui.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import queue
@@ -7,13 +8,42 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import Counter
 
+def create_bar_chart(all_logs, chart_type='ip'):
+    """Create bar chart for stats (was missing - now defined here)"""
+    if chart_type == 'ip':
+        counter = Counter(log[1] for log in all_logs)  # source IP
+        title = 'Top Active IPs'
+        xlabel = 'IPs'
+    elif chart_type == 'domain':
+        counter = Counter(log[2] for log in all_logs)  # query domain
+        title = 'Top Requested Domains'
+        xlabel = 'Domains'
+    else:
+        return None
+
+    top_items = counter.most_common(5)
+    if not top_items:
+        return None
+
+    labels, values = zip(*top_items)
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.bar(labels, values, color='skyblue')
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel('Count')
+    ax.tick_params(axis='x', rotation=45)
+    plt.tight_layout()
+
+    return fig
+
 def update_logs(tree, log_queue, paused):
     if paused[0]:
         return
     try:
         while True:
             log = log_queue.get_nowait()
-            iid = tree.insert('', 0, values=log[:-1])
+            iid = tree.insert('', 0, values=log[:-1])  # Exclude status
             status = log[-1]
             if status in ['blocked_ip', 'blocked_domain']:
                 tree.item(iid, tags=('malicious',))
@@ -24,32 +54,40 @@ def update_logs(tree, log_queue, paused):
 
 def update_gui(root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused):
     update_logs(tree, log_queue, paused)
-    root.after(5000, update_stats, stats_frame, all_logs)
+
+    # Refresh blocklists
     domain_listbox.delete(0, tk.END)
     for domain in domain_blocklist:
         domain_listbox.insert(tk.END, domain)
     ip_listbox.delete(0, tk.END)
     for ip in ip_blacklist:
         ip_listbox.insert(tk.END, ip)
+
     root.after(100, update_gui, root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused)
 
 def update_stats(stats_frame, all_logs):
     for widget in stats_frame.winfo_children():
         widget.destroy()
+
     stats_text = compute_stats(all_logs)
     text_widget = tk.Text(stats_frame, wrap='word', height=10)
     text_widget.insert(tk.END, stats_text)
     text_widget.config(state='disabled')
     text_widget.pack(expand=True, fill='x')
+
+    # Bar charts (now safe - function exists)
     if all_logs:
         ip_fig = create_bar_chart(all_logs, 'ip')
-        ip_canvas = FigureCanvasTkAgg(ip_fig, master=stats_frame)
-        ip_canvas.draw()
-        ip_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        if ip_fig:
+            ip_canvas = FigureCanvasTkAgg(ip_fig, master=stats_frame)
+            ip_canvas.draw()
+            ip_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+
         domain_fig = create_bar_chart(all_logs, 'domain')
-        domain_canvas = FigureCanvasTkAgg(domain_fig, master=stats_frame)
-        domain_canvas.draw()
-        domain_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
+        if domain_fig:
+            domain_canvas = FigureCanvasTkAgg(domain_fig, master=stats_frame)
+            domain_canvas.draw()
+            domain_canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
 def add_domain(entry, listbox, blocklist):
     domain = entry.get().strip()
@@ -81,15 +119,19 @@ def remove_ip(listbox, blocklist):
 
 def export_logs(all_logs):
     if not all_logs:
-        messagebox.showinfo("No Data", "No logs to export.")
+        messagebox.showinfo("No Data", "No logs to export yet.")
         return
-    file = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    file = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv")],
+        title="Export DNS Logs"
+    )
     if file:
         with open(file, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details', 'Status'])
             writer.writerows(all_logs)
-        messagebox.showinfo("Success", f"Exported {len(all_logs)} logs")
+        messagebox.showinfo("Success", f"Exported {len(all_logs)} logs to {file}")
 
 def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     root = tk.Tk()
@@ -99,6 +141,7 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     notebook = ttk.Notebook(root)
     notebook.pack(expand=True, fill='both')
 
+    # Logs Tab
     logs_frame = ttk.Frame(notebook)
     notebook.add(logs_frame, text='Live Logs')
 
@@ -113,6 +156,7 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     tree.tag_configure('safe', background='lightgreen')
     tree.tag_configure('malicious', background='lightcoral')
 
+    # Pause / Export
     paused = [False]
 
     def toggle_pause():
@@ -120,15 +164,16 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
         pause_btn.config(text="Resume Logs" if paused[0] else "Pause Logs")
 
     pause_btn = ttk.Button(logs_frame, text="Pause Logs", command=toggle_pause)
-    pause_btn.pack(pady=5)
+    pause_btn.pack(pady=5, padx=10)
 
     export_btn = ttk.Button(logs_frame, text="Export Logs to CSV", command=lambda: export_logs(all_logs))
-    export_btn.pack(pady=5)
+    export_btn.pack(pady=5, padx=10)
 
+    # Stats Tab
     stats_frame = ttk.Frame(notebook)
     notebook.add(stats_frame, text='Statistics')
-    update_stats(stats_frame, all_logs)
 
+    # Blocklists Tab
     block_frame = ttk.Frame(notebook)
     notebook.add(block_frame, text='Blocklists')
 
@@ -154,6 +199,7 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     remove_ip_btn = tk.Button(block_frame, text="Remove Selected", command=lambda: remove_ip(ip_listbox, ip_blacklist))
     remove_ip_btn.pack()
 
+    # Status bar
     status_bar = tk.Label(root, text="Queries: 0 | Blocked: 0", bd=1, relief=tk.SUNKEN, anchor=tk.W)
     status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
@@ -165,5 +211,7 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
 
     update_status_bar()
 
+    # Start updater
     root.after(100, update_gui, root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused)
+
     root.mainloop()
