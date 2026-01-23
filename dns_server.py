@@ -77,7 +77,10 @@ def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, 
         print(f"DNS Query from {src_ip}: {query_name} ({query_type}) - {details}")
         log_entry = (timestamp, src_ip, query_name, query_type, details, status)
         log_queue.put(log_entry)
+        # Append log and auto-trim to prevent memory bloat
         all_logs.append(log_entry)
+        if len(all_logs) > 5000:
+            all_logs = all_logs[-5000:]  # Keep only the last 5000 entries
 
     except Exception as e:
         print(f"Error handling DNS: {e}")
