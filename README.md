@@ -57,3 +57,10 @@ Configure DNS on devices:
 
 Set Primary DNS to your computer's IP
 Set Secondary DNS to 8.8.8.8 (backup)
+
+## Progress Log - January 23, 2026
+- Added upstream DNS timeout + retry mechanism
+- Added pause/resume logging button in Logs tab
+- Added CSV export button for logs
+- Added unique IPs & domains count in statistics
+- Improved GUI status bar with live query/blocked counters
