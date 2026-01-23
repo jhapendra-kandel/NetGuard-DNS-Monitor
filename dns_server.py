@@ -43,37 +43,36 @@ def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, 
             sock.sendto(reply.pack(), addr)
 
         else:
-            # Forward to upstream with timeout and 1 retry
+        # Forward to upstream with timeout and 1 retry
             success = False
-            for attempt in range(2):
-                try:
-                    upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    upstream_sock.settimeout(2.0)
-                    upstream_sock.sendto(data, (UPSTREAM_DNS, DNS_PORT))
-                    response, _ = upstream_sock.recvfrom(4096)
-                    upstream_sock.close()
-                    sock.sendto(response, addr)
-                    success = True
-                    details = f'Forwarded (attempt {attempt+1})'
-                    break
-                except socket.timeout:
-                    details = f'Timeout (attempt {attempt+1}/2)'
-                    print(f"Timeout from {src_ip}: {query_name}")
-                    if attempt == 1:
-                        reply = request.reply()
-                        reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
-                        sock.sendto(reply.pack(), addr)
-                        details = 'Failed after retries'
-                except Exception as e:
-                    details = f'Error: {str(e)[:30]}'
-                    print(f"Upstream error from {src_ip}: {query_name} - {e}")
-                    if attempt == 1:
-                        reply = request.reply()
-                        reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
-                        sock.sendto(reply.pack(), addr)
-
-            if not success:
-                status = 'failed'
+        for attempt in range(2):
+            try:
+                upstream_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                upstream_sock.settimeout(2.0)  # 2-second timeout
+                upstream_sock.sendto(data, (UPSTREAM_DNS, DNS_PORT))
+                response, _ = upstream_sock.recvfrom(4096)
+                upstream_sock.close()
+                sock.sendto(response, addr)
+                success = True
+                details = f'Forwarded (attempt {attempt+1})'
+                break
+            except socket.timeout:
+                details = f'Timeout (attempt {attempt+1}/2)'
+                print(f"Timeout from {src_ip}: {query_name}")
+                if attempt == 1:
+                    reply = request.reply()
+                    reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
+                    sock.sendto(reply.pack(), addr)
+                    details = 'Failed after retries'
+            except Exception as e:
+                details = f'Error: {str(e)[:30]}'
+                print(f"Upstream error from {src_ip}: {query_name} - {e}")
+                if attempt == 1:
+                    reply = request.reply()
+                    reply.header.rcode = getattr(DNSHeader.RCODE, 'SERVFAIL')
+                    sock.sendto(reply.pack(), addr)
+        if not success:
+            status = 'failed'
 
         print(f"DNS Query from {src_ip}: {query_name} ({query_type}) - {details}")
         log_entry = (timestamp, src_ip, query_name, query_type, details, status)
