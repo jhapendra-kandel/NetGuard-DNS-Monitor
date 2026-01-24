@@ -164,6 +164,25 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     tree.tag_configure('safe', background='lightgreen')
     tree.tag_configure('malicious', background='lightcoral')
 
+        # Search/filter box
+    filter_frame = ttk.Frame(logs_frame)
+    filter_frame.pack(fill='x', pady=5, padx=10)
+
+    ttk.Label(filter_frame, text="Filter:").pack(side='left')
+    filter_entry = ttk.Entry(filter_frame)
+    filter_entry.pack(side='left', fill='x', expand=True, padx=5)
+
+    def apply_filter():
+        text = filter_entry.get().lower()
+        for item in tree.get_children():
+            values = tree.item(item)['values']
+            if text in str(values).lower():
+                tree.see(item)
+            else:
+                tree.detach(item)
+
+    filter_entry.bind('<KeyRelease>', lambda e: apply_filter())
+
     # Pause / Export
     paused = [False]
 
