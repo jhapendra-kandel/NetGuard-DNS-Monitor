@@ -140,6 +140,16 @@ def export_logs(all_logs):
             writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details', 'Status'])
             writer.writerows(all_logs)
         messagebox.showinfo("Success", f"Exported {len(all_logs)} logs to {file}")
+    
+    def clear_logs():
+        if messagebox.askyesno("Confirm Clear", "Clear all logs? This cannot be undone."):
+            all_logs.clear()
+            for item in tree.get_children():
+                tree.delete(item)
+            messagebox.showinfo("Cleared", "All logs have been cleared.")
+
+clear_btn = ttk.Button(logs_frame, text="Clear All Logs", command=clear_logs)
+clear_btn.pack(pady=5, padx=10)    
 
 def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     root = tk.Tk()
