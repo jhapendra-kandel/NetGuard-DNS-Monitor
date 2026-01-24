@@ -1,4 +1,7 @@
 # gui.py
+VERSION = "1.0.0 (Final Release)"
+root.title(f"DNS Network Activity Monitor - v{VERSION}")
+
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import queue
