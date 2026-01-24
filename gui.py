@@ -51,6 +51,14 @@ def update_logs(tree, log_queue, paused):
                 tree.item(iid, tags=('safe',))
     except queue.Empty:
         pass
+        # Show alert popup only for blocked queries (rate-limited)
+    if status in ['blocked_ip', 'blocked_domain'] and not hasattr(self, 'last_alert_time'):
+        self.last_alert_time = datetime.datetime.now()
+        messagebox.showwarning("Blocked Query Detected", f"Blocked: {log[2]}\nFrom IP: {log[1]}")
+    elif hasattr(self, 'last_alert_time'):
+        if (datetime.datetime.now() - self.last_alert_time).total_seconds() > 30:
+            self.last_alert_time = datetime.datetime.now()
+            messagebox.showwarning("Blocked Query Detected", f"Blocked: {log[2]}\nFrom IP: {log[1]}")
 
 def update_gui(root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused):
     update_logs(tree, log_queue, paused)
