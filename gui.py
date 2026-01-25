@@ -137,6 +137,16 @@ def clear_logs(all_logs, tree):
         messagebox.showinfo("Cleared", "All logs cleared.")
 
 def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
+
+    import subprocess
+
+    try:
+        branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode().strip()
+    except:
+        branch = "unknown"
+
+    root.title(f"DNS Network Activity Monitor - v1.0.0 (branch: {branch})")
+
     root = tk.Tk()
     root.title("DNS Network Activity Monitor")
     root.geometry("1000x800")
