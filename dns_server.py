@@ -4,6 +4,11 @@ import threading
 from dnslib import DNSHeader, DNSRecord, QTYPE, DNSLabel, RR, A
 import datetime
 
+# Simple cache placeholder (to be expanded later)
+dns_cache = {}
+cache_hits = 0
+cache_misses = 0
+
 UPSTREAM_DNS = '8.8.8.8'
 DNS_PORT = 53
 SINKHOLE_IP = '0.0.0.0'
@@ -16,6 +21,14 @@ def is_domain_blocked(query_name, blocklist):
     return False
 
 def handle_dns_request(data, addr, sock, log_queue, all_logs, domain_blocklist, ip_blacklist):
+    # Future cache check placeholder
+    global cache_hits, cache_misses
+    if query_name in dns_cache:
+        cache_hits += 1
+    # sock.sendto(dns_cache[query_name], addr)  # Uncomment later
+        details = 'Cached (placeholder)'
+    else:
+        cache_misses += 1
     try:
         request = DNSRecord.parse(data)
         query_name = str(request.q.qname).rstrip('.')
