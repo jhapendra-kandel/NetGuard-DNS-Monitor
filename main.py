@@ -4,6 +4,15 @@ import queue
 from dns_server import start_dns_server
 from gui import create_gui
 
+try:
+    import matplotlib.pyplot as plt
+    from PIL import Image
+    print("✓ Matplotlib & Pillow loaded successfully")
+except ImportError as e:
+    print("Error: Missing required library!")
+    print("Run: pip install matplotlib pillow")
+    print("Full error:", e)
+    exit(1)
 
 log_queue = queue.Queue()
 
