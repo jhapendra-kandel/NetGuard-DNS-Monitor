@@ -64,3 +64,14 @@ Set Secondary DNS to 8.8.8.8 (backup)
 - Added CSV export button for logs
 - Added unique IPs & domains count in statistics
 - Improved GUI status bar with live query/blocked counters
+
+## Development Branches (Jan 25)
+- `main` → stable v1.0.0 release
+- `feature/update-polish` → active improvements (timeout, cache prep, alerts log, GUI title)
+- `test/branch-testing` → experimental testing branch (create later if needed)
+
+Today's progress:
+- Dependency check on startup
+- Cache placeholder & counters
+- Blocked queries logged to alerts.log
+- Git branch shown in GUI title
