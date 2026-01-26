@@ -28,15 +28,16 @@ Starting DNS server and GUI...
     )
     dns_thread.start()
 
-    # Small delay to let server bind port 53
-    time.sleep(1)
+    # Give server 1-2 seconds to bind port 53
+    time.sleep(1.5)
 
     try:
+        # Launch GUI - this blocks until GUI is closed
         create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist)
     except KeyboardInterrupt:
         print("\nShutting down gracefully...")
     except Exception as e:
-        print(f"\nError during startup: {e}")
+        print(f"\nStartup error: {e}")
         sys.exit(1)
 
     print("NetGuard DNS Monitor stopped.")
