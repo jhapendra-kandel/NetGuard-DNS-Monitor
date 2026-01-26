@@ -1,4 +1,4 @@
-# gui.py - Full fixed version with all errors resolved
+# gui.py
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import queue
@@ -7,16 +7,16 @@ from stats import compute_stats
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import Counter
-import datetime  # Fixed: import datetime for time checks
+import datetime
+import subprocess
 
 def create_bar_chart(all_logs, chart_type='ip'):
-    """Create bar chart for stats"""
     if chart_type == 'ip':
-        counter = Counter(log[1] for log in all_logs)  # source IP
+        counter = Counter(log[1] for log in all_logs)
         title = 'Top Active IPs'
         xlabel = 'IPs'
     elif chart_type == 'domain':
-        counter = Counter(log[2] for log in all_logs)  # query domain
+        counter = Counter(log[2] for log in all_logs)
         title = 'Top Requested Domains'
         xlabel = 'Domains'
     else:
@@ -44,7 +44,7 @@ def update_logs(tree, log_queue, paused):
     try:
         while True:
             log = log_queue.get_nowait()
-            iid = tree.insert('', 0, values=log[:-1])  # Exclude status
+            iid = tree.insert('', 0, values=log[:-1])
             status = log[-1]
             if status in ['blocked_ip', 'blocked_domain']:
                 tree.item(iid, tags=('malicious',))
@@ -55,7 +55,6 @@ def update_logs(tree, log_queue, paused):
 
 def update_gui(root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused):
     update_logs(tree, log_queue, paused)
-    # Refresh blocklists
     domain_listbox.delete(0, tk.END)
     for domain in domain_blocklist:
         domain_listbox.insert(tk.END, domain)
@@ -72,7 +71,6 @@ def update_stats(stats_frame, all_logs):
     text_widget.insert(tk.END, stats_text)
     text_widget.config(state='disabled')
     text_widget.pack(expand=True, fill='x')
-    # Bar charts
     if all_logs:
         ip_fig = create_bar_chart(all_logs, 'ip')
         if ip_fig:
@@ -117,36 +115,15 @@ def export_logs(all_logs):
     if not all_logs:
         messagebox.showinfo("No Data", "No logs to export yet.")
         return
-    file = filedialog.asksaveasfilename(
-        defaultextension=".csv",
-        filetypes=[("CSV files", "*.csv")],
-        title="Export DNS Logs"
-    )
+    file = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
     if file:
         with open(file, 'w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details', 'Status'])
             writer.writerows(all_logs)
-        messagebox.showinfo("Success", f"Exported {len(all_logs)} logs to {file}")
-
-def clear_logs(all_logs, tree):
-    if messagebox.askyesno("Confirm", "Clear all logs?"):
-        all_logs.clear()
-        for item in tree.get_children():
-            tree.delete(item)
-        messagebox.showinfo("Cleared", "All logs cleared.")
+        messagebox.showinfo("Success", f"Exported {len(all_logs)} logs")
 
 def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
-
-    import subprocess
-
-    try:
-        branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"]).decode().strip()
-    except:
-        branch = "unknown"
-
-    root.title(f"DNS Network Activity Monitor - v1.0.0 (branch: {branch})")
-
     root = tk.Tk()
     root.title("DNS Network Activity Monitor")
     root.geometry("1000x800")
@@ -154,7 +131,6 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     notebook = ttk.Notebook(root)
     notebook.pack(expand=True, fill='both')
 
-    # Logs Tab
     logs_frame = ttk.Frame(notebook)
     notebook.add(logs_frame, text='Live Logs')
 
@@ -169,7 +145,6 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     tree.tag_configure('safe', background='lightgreen')
     tree.tag_configure('malicious', background='lightcoral')
 
-    # Pause / Export / Clear
     paused = [False]
 
     def toggle_pause():
@@ -177,19 +152,14 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
         pause_btn.config(text="Resume Logs" if paused[0] else "Pause Logs")
 
     pause_btn = ttk.Button(logs_frame, text="Pause Logs", command=toggle_pause)
-    pause_btn.pack(pady=5, padx=10)
+    pause_btn.pack(pady=5)
 
     export_btn = ttk.Button(logs_frame, text="Export Logs to CSV", command=lambda: export_logs(all_logs))
-    export_btn.pack(pady=5, padx=10)
+    export_btn.pack(pady=5)
 
-    clear_btn = ttk.Button(logs_frame, text="Clear Logs", command=lambda: clear_logs(all_logs, tree))
-    clear_btn.pack(pady=5, padx=10)
-
-    # Stats Tab
     stats_frame = ttk.Frame(notebook)
     notebook.add(stats_frame, text='Statistics')
 
-    # Blocklists Tab
     block_frame = ttk.Frame(notebook)
     notebook.add(block_frame, text='Blocklists')
 
@@ -215,7 +185,6 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     remove_ip_btn = tk.Button(block_frame, text="Remove Selected", command=lambda: remove_ip(ip_listbox, ip_blacklist))
     remove_ip_btn.pack()
 
-    # Status bar
     status_bar = tk.Label(root, text="Queries: 0 | Blocked: 0", bd=1, relief=tk.SUNKEN, anchor=tk.W)
     status_bar.pack(side=tk.BOTTOM, fill=tk.X)
 
@@ -227,7 +196,6 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
 
     update_status_bar()
 
-    # Start updater
     root.after(100, update_gui, root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused)
 
     root.mainloop()
