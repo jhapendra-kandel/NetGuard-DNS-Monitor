@@ -6,23 +6,21 @@ import time
 from dns_server import start_dns_server
 from gui import create_gui
 
-# Simple banner for startup
-print("""
+def main():
+    print("""
 ╔════════════════════════════════════════════╗
 ║     NetGuard DNS Monitor v1.0.0            ║
 ║  Real-time DNS Monitoring & Protection     ║
 ╚════════════════════════════════════════════╝
-""")
+Starting DNS server and GUI...
+    """)
 
-def main():
-    print("Starting DNS server and GUI...")
-    
     log_queue = queue.Queue()
     all_logs = []
     domain_blocklist = []
     ip_blacklist = []
 
-    # Start DNS server in background thread
+    # Start DNS server thread
     dns_thread = threading.Thread(
         target=start_dns_server,
         args=(log_queue, all_logs, domain_blocklist, ip_blacklist),
@@ -30,11 +28,10 @@ def main():
     )
     dns_thread.start()
 
-    # Give server a moment to bind port 53
+    # Small delay to let server bind port 53
     time.sleep(1)
 
     try:
-        # Launch GUI (this blocks until GUI closes)
         create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist)
     except KeyboardInterrupt:
         print("\nShutting down gracefully...")
