@@ -218,7 +218,8 @@ __marimo__/
 
 ## txt files
 .txt
-domain_blocklist.txt
-ip_blocklist.txt
-domain_blocklist.txt
-ip_blacklist.txt
+./domain_blocklist.txt
+./ip_blocklist.txt
+./domain_blocklist.txt
+./ip_blacklist.txt
+*.txt
