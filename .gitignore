@@ -214,3 +214,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+## txt files
+.txt
+domain_blocklist.txt
+ip_blocklist.txt
+domain_blocklist.txt
+ip_blacklist.txt
