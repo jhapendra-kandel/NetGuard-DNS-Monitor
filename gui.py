@@ -1,499 +1,518 @@
-# gui.py
 import tkinter as tk
-from tkinter import ttk, messagebox, filedialog, scrolledtext
+from tkinter import ttk, messagebox, filedialog, simpledialog
 import queue
 import csv
+import datetime
 from stats import compute_stats
-import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from collections import Counter
-import datetime
-import os
 
-def create_bar_chart(all_logs, chart_type='ip'):
-    """Create bar charts for visualization"""
-    if chart_type == 'ip':
-        counter = Counter(log[1] for log in all_logs)
-        title = 'Top 10 Active IPs'
-        xlabel = 'Source IPs'
-        color = 'skyblue'
-    elif chart_type == 'domain':
-        counter = Counter(log[2] for log in all_logs)
-        title = 'Top 10 Requested Domains'
-        xlabel = 'Domains'
-        color = 'lightcoral'
-    elif chart_type == 'status':
-        status_map = {
-            'safe': 'Safe',
-            'blocked_domain': 'Blocked Domain',
-            'blocked_ip': 'Blocked IP',
-            'failed': 'Failed'
-        }
-        counter = Counter(status_map.get(log[5], 'Other') for log in all_logs)
-        title = 'Query Status Distribution'
-        xlabel = 'Status'
-        color = 'lightgreen'
-    else:
-        return None
-
-    top_items = counter.most_common(10)
-    if not top_items:
-        return None
-
-    labels, values = zip(*top_items)
-    
-    # Truncate long labels
-    labels = [label[:20] + '...' if len(label) > 20 else label for label in labels]
-
-    fig, ax = plt.subplots(figsize=(8, 5))
-    bars = ax.bar(labels, values, color=color, edgecolor='black', alpha=0.7)
-    
-    # Add value labels on bars
-    for bar in bars:
-        height = bar.get_height()
-        ax.text(bar.get_x() + bar.get_width()/2., height,
-                f'{int(height)}',
-                ha='center', va='bottom', fontsize=9)
-    
-    ax.set_title(title, fontsize=14, fontweight='bold')
-    ax.set_xlabel(xlabel, fontsize=11)
-    ax.set_ylabel('Count', fontsize=11)
-    ax.tick_params(axis='x', rotation=45)
-    ax.grid(axis='y', alpha=0.3)
-    plt.tight_layout()
-
-    return fig
-
-def update_logs(tree, log_queue, paused):
-    """Update log display from queue"""
-    if paused[0]:
-        return
-    try:
-        while True:
-            log = log_queue.get_nowait()
-            iid = tree.insert('', 0, values=log[:-1])
-            status = log[-1]
-            if status in ['blocked_ip', 'blocked_domain']:
-                tree.item(iid, tags=('malicious',))
-            elif status == 'safe':
-                tree.item(iid, tags=('safe',))
-            elif status == 'failed':
-                tree.item(iid, tags=('failed',))
-    except queue.Empty:
-        pass
-
-def update_gui(root, tree, log_queue, all_logs, stats_frame, domain_listbox, ip_listbox, 
-               domain_blocklist, ip_blacklist, paused, notebook):
-    """Main GUI update loop"""
-    update_logs(tree, log_queue, paused)
-    
-    # Update blocklists display
-    domain_listbox.delete(0, tk.END)
-    for domain in domain_blocklist:
-        domain_listbox.insert(tk.END, domain)
-    
-    ip_listbox.delete(0, tk.END)
-    for ip in ip_blacklist:
-        ip_listbox.insert(tk.END, ip)
-    
-    # Auto-refresh stats when stats tab is selected
-    current_tab = notebook.index(notebook.select())
-    if current_tab == 1:  # Stats tab (index 1)
-        update_stats(stats_frame, all_logs)
-    
-    root.after(100, update_gui, root, tree, log_queue, all_logs, stats_frame, 
-               domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused, notebook)
-
-def update_stats(stats_frame, all_logs):
-    """Update statistics display with charts"""
-    # Clear previous widgets
-    for widget in stats_frame.winfo_children():
-        widget.destroy()
-    
-    # Create scrollable frame for stats
-    canvas = tk.Canvas(stats_frame)
-    scrollbar = ttk.Scrollbar(stats_frame, orient="vertical", command=canvas.yview)
-    scrollable_frame = ttk.Frame(canvas)
-    
-    scrollable_frame.bind(
-        "<Configure>",
-        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
-    )
-    
-    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
-    canvas.configure(yscrollcommand=scrollbar.set)
-    
-    # Add text statistics
-    stats_text = compute_stats(all_logs)
-    text_widget = tk.Text(scrollable_frame, wrap='word', height=25, width=80, 
-                          font=('Courier', 10), bg='#f0f0f0')
-    text_widget.insert(tk.END, stats_text)
-    text_widget.config(state='disabled')
-    text_widget.pack(pady=10, padx=10)
-    
-    # Add charts if there are logs
-    if all_logs:
-        # Status distribution pie chart
-        status_fig = create_bar_chart(all_logs, 'status')
-        if status_fig:
-            status_canvas = FigureCanvasTkAgg(status_fig, master=scrollable_frame)
-            status_canvas.draw()
-            status_canvas.get_tk_widget().pack(pady=10, padx=10)
+class DNSMonitorGUI:
+    def __init__(self, log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector):
+        self.log_queue = log_queue
+        self.all_logs = all_logs
+        self.stats_tracker = stats_tracker
+        self.dns_cache = dns_cache
+        self.blocklist = blocklist
+        self.anomaly_detector = anomaly_detector
+        self.filter_text = ""
+        self.filter_type = "All"
+        self.paused = False
+        self.last_stats_update = 0
         
-        # Top IPs chart
-        ip_fig = create_bar_chart(all_logs, 'ip')
-        if ip_fig:
-            ip_canvas = FigureCanvasTkAgg(ip_fig, master=scrollable_frame)
-            ip_canvas.draw()
-            ip_canvas.get_tk_widget().pack(pady=10, padx=10)
+        self.root = tk.Tk()
+        self.root.title("🛡️ DNS Network Activity Monitor")
+        self.root.geometry("1100x800")
         
-        # Top domains chart
-        domain_fig = create_bar_chart(all_logs, 'domain')
-        if domain_fig:
-            domain_canvas = FigureCanvasTkAgg(domain_fig, master=scrollable_frame)
-            domain_canvas.draw()
-            domain_canvas.get_tk_widget().pack(pady=10, padx=10)
+        self.create_menu()
+        
+        self.status_bar = tk.Label(self.root, text="DNS Monitor Running", 
+                                   bd=1, relief=tk.SUNKEN, anchor=tk.W)
+        self.status_bar.pack(side=tk.BOTTOM, fill=tk.X)
+        
+        self.notebook = ttk.Notebook(self.root)
+        self.notebook.pack(expand=True, fill='both', padx=5, pady=5)
+        
+        self.create_logs_tab()
+        self.create_stats_tab()
+        self.create_blocklist_tab()
+        self.create_alerts_tab()
+        
+        self.update_gui()
+        
+    def create_menu(self):
+        menubar = tk.Menu(self.root)
+        self.root.config(menu=menubar)
+        
+        file_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="Export Logs (CSV)", command=self.export_logs)
+        file_menu.add_command(label="Clear Logs", command=self.clear_logs)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.root.quit)
+        
+        view_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="View", menu=view_menu)
+        view_menu.add_command(label="Pause/Resume", command=self.toggle_pause)
+        
+        cache_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Cache", menu=cache_menu)
+        cache_menu.add_command(label="Clear Cache", command=self.clear_cache)
+        cache_menu.add_command(label="Cache Statistics", command=self.show_cache_stats)
+        
+        help_menu = tk.Menu(menubar, tearoff=0)
+        menubar.add_cascade(label="Help", menu=help_menu)
+        help_menu.add_command(label="About", command=self.show_about)
+        
+    def create_logs_tab(self):
+        logs_frame = ttk.Frame(self.notebook)
+        self.notebook.add(logs_frame, text='📋 Live Logs')
+        
+        filter_frame = ttk.Frame(logs_frame)
+        filter_frame.pack(fill='x', padx=5, pady=5)
+        
+        ttk.Label(filter_frame, text="Filter:").pack(side='left', padx=5)
+        self.filter_entry = ttk.Entry(filter_frame, width=30)
+        self.filter_entry.pack(side='left', padx=5)
+        self.filter_entry.bind('<KeyRelease>', lambda e: self.apply_filter())
+        
+        ttk.Label(filter_frame, text="Type:").pack(side='left', padx=(20, 5))
+        self.type_filter = ttk.Combobox(filter_frame, width=10, 
+                                        values=['All', 'A', 'AAAA', 'CNAME', 'MX', 'TXT'],
+                                        state='readonly')
+        self.type_filter.set('All')
+        self.type_filter.pack(side='left', padx=5)
+        self.type_filter.bind('<<ComboboxSelected>>', lambda e: self.apply_filter())
+        
+        ttk.Button(filter_frame, text="Clear Filter", 
+                  command=self.clear_filter).pack(side='left', padx=5)
+        
+        tree_frame = ttk.Frame(logs_frame)
+        tree_frame.pack(expand=True, fill='both', padx=5, pady=5)
+        
+        scrollbar = ttk.Scrollbar(tree_frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        self.tree = ttk.Treeview(tree_frame, 
+                                 columns=('Timestamp', 'Source IP', 'Query Domain', 
+                                         'Type', 'Details', 'Status'),
+                                 show='headings',
+                                 yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.tree.yview)
+        
+        self.tree.heading('Timestamp', text='Timestamp')
+        self.tree.heading('Source IP', text='Source IP')
+        self.tree.heading('Query Domain', text='Query Domain')
+        self.tree.heading('Type', text='Type')
+        self.tree.heading('Details', text='Details')
+        self.tree.heading('Status', text='Status')
+        
+        self.tree.column('Timestamp', width=150)
+        self.tree.column('Source IP', width=120)
+        self.tree.column('Query Domain', width=300)
+        self.tree.column('Type', width=70)
+        self.tree.column('Details', width=180)
+        self.tree.column('Status', width=80)
+        
+        self.tree.pack(expand=True, fill='both')
+        
+        self.tree.tag_configure('success', foreground='green')
+        self.tree.tag_configure('failed', foreground='red')
+        self.tree.tag_configure('blocked', foreground='orange')
+        self.tree.tag_configure('cached', foreground='blue')
+        
+    def create_stats_tab(self):
+        stats_tab = ttk.Frame(self.notebook)
+        self.notebook.add(stats_tab, text='📊 Statistics & Analytics')
+        
+        # FIXED: Proper scrollbar implementation
+        canvas = tk.Canvas(stats_tab, bg='white')
+        scrollbar = ttk.Scrollbar(stats_tab, orient="vertical", command=canvas.yview)
+        self.stats_frame = ttk.Frame(canvas)
+        
+        # Configure scroll region when content changes
+        self.stats_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=self.stats_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        # Enable mousewheel scrolling
+        def on_mousewheel(event):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        
+        canvas.bind_all("<MouseWheel>", on_mousewheel)
+        
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
+        
+        tk.Label(self.stats_frame, text="Waiting for DNS activity...", 
+                font=("Arial", 12)).pack(pady=20)
     
-    canvas.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
-
-def save_blocklists(domain_blocklist, ip_blacklist):
-    """Save blocklists to files"""
-    try:
-        with open('domain_blocklist.txt', 'w') as f:
-            for domain in domain_blocklist:
-                f.write(f"{domain}\n")
+    def create_blocklist_tab(self):
+        blocklist_frame = ttk.Frame(self.notebook)
+        self.notebook.add(blocklist_frame, text='🚫 Blocklist Manager')
         
-        with open('ip_blacklist.txt', 'w') as f:
-            for ip in ip_blacklist:
-                f.write(f"{ip}\n")
+        # Control buttons
+        btn_frame = ttk.Frame(blocklist_frame)
+        btn_frame.pack(fill='x', padx=10, pady=10)
+        
+        ttk.Button(btn_frame, text="➕ Add Blocked Domain", 
+                  command=self.add_blocked_domain).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="➕ Add Allowed Domain", 
+                  command=self.add_allowed_domain).pack(side='left', padx=5)
+        ttk.Button(btn_frame, text="🔄 Load Default Ads/Trackers", 
+                  command=self.load_default_blocklist).pack(side='left', padx=5)
+        
+        # Lists frame
+        lists_frame = ttk.Frame(blocklist_frame)
+        lists_frame.pack(expand=True, fill='both', padx=10, pady=5)
+        
+        # Blocked list
+        blocked_frame = ttk.LabelFrame(lists_frame, text="Blocked Domains", padding=10)
+        blocked_frame.pack(side='left', expand=True, fill='both', padx=5)
+        
+        self.blocked_listbox = tk.Listbox(blocked_frame, selectmode=tk.SINGLE)
+        self.blocked_listbox.pack(expand=True, fill='both')
+        
+        ttk.Button(blocked_frame, text="Remove Selected", 
+                  command=self.remove_blocked).pack(pady=5)
+        
+        # Allowed list
+        allowed_frame = ttk.LabelFrame(lists_frame, text="Allowed Domains", padding=10)
+        allowed_frame.pack(side='left', expand=True, fill='both', padx=5)
+        
+        self.allowed_listbox = tk.Listbox(allowed_frame, selectmode=tk.SINGLE)
+        self.allowed_listbox.pack(expand=True, fill='both')
+        
+        ttk.Button(allowed_frame, text="Remove Selected", 
+                  command=self.remove_allowed).pack(pady=5)
+        
+        self.update_blocklist_display()
+    
+    def create_alerts_tab(self):
+        alerts_frame = ttk.Frame(self.notebook)
+        self.notebook.add(alerts_frame, text='⚠️ Security Alerts')
+        
+        # Info label
+        info_label = ttk.Label(alerts_frame, 
+                              text="Real-time anomaly detection and security alerts",
+                              font=('Arial', 10, 'bold'))
+        info_label.pack(pady=10)
+        
+        # Alerts display
+        alerts_text_frame = ttk.Frame(alerts_frame)
+        alerts_text_frame.pack(expand=True, fill='both', padx=10, pady=5)
+        
+        scrollbar = ttk.Scrollbar(alerts_text_frame)
+        scrollbar.pack(side='right', fill='y')
+        
+        self.alerts_text = tk.Text(alerts_text_frame, wrap='word', 
+                                   yscrollcommand=scrollbar.set, 
+                                   font=('Courier', 9))
+        scrollbar.config(command=self.alerts_text.yview)
+        self.alerts_text.pack(expand=True, fill='both')
+        
+        self.alerts_text.tag_configure('HIGH', foreground='red', font=('Courier', 9, 'bold'))
+        self.alerts_text.tag_configure('MEDIUM', foreground='orange', font=('Courier', 9, 'bold'))
+        self.alerts_text.tag_configure('LOW', foreground='blue')
+        
+        ttk.Button(alerts_frame, text="Clear Alerts", 
+                  command=self.clear_alerts).pack(pady=5)
+    
+    def apply_filter(self):
+        self.filter_text = self.filter_entry.get().lower()
+        self.filter_type = self.type_filter.get()
+        
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        
+        for log in reversed(self.all_logs):
+            if self.matches_filter(log):
+                self.insert_log_entry(log)
+    
+    def matches_filter(self, log):
+        timestamp, src_ip, query_name, query_type, details, success, blocked, cached = log
+        
+        if self.filter_text:
+            if not (self.filter_text in query_name.lower() or 
+                   self.filter_text in src_ip.lower()):
+                return False
+        
+        if self.filter_type != 'All' and query_type != self.filter_type:
+            return False
         
         return True
-    except Exception as e:
-        print(f"Error saving blocklists: {e}")
-        return False
-
-def load_blocklists(domain_blocklist, ip_blacklist):
-    """Load blocklists from files"""
-    try:
-        if os.path.exists('domain_blocklist.txt'):
-            with open('domain_blocklist.txt', 'r') as f:
-                for line in f:
-                    domain = line.strip()
-                    if domain and domain not in domain_blocklist:
-                        domain_blocklist.append(domain)
+    
+    def clear_filter(self):
+        self.filter_entry.delete(0, tk.END)
+        self.type_filter.set('All')
+        self.apply_filter()
+    
+    def insert_log_entry(self, log):
+        timestamp, src_ip, query_name, query_type, details, success, blocked, cached = log
         
-        if os.path.exists('ip_blacklist.txt'):
-            with open('ip_blacklist.txt', 'r') as f:
-                for line in f:
-                    ip = line.strip()
-                    if ip and ip not in ip_blacklist:
-                        ip_blacklist.append(ip)
-        
-        print(f"Loaded {len(domain_blocklist)} domains and {len(ip_blacklist)} IPs")
-        return True
-    except Exception as e:
-        print(f"Error loading blocklists: {e}")
-        return False
-
-def add_domain(entry, listbox, blocklist):
-    """Add domain to blocklist"""
-    domain = entry.get().strip().lower()
-    if domain and domain not in blocklist:
-        blocklist.append(domain)
-        listbox.insert(tk.END, domain)
-        save_blocklists(blocklist, [])  # Save after adding
-        messagebox.showinfo("Success", f"Added domain: {domain}")
-    elif domain in blocklist:
-        messagebox.showwarning("Duplicate", f"Domain already in blocklist: {domain}")
-    entry.delete(0, tk.END)
-
-def remove_domain(listbox, blocklist):
-    """Remove domain from blocklist"""
-    selected = listbox.curselection()
-    if selected:
-        domain = listbox.get(selected[0])
-        blocklist.remove(domain)
-        listbox.delete(selected[0])
-        save_blocklists(blocklist, [])  # Save after removing
-        messagebox.showinfo("Removed", f"Removed domain: {domain}")
-
-def add_ip(entry, listbox, blocklist):
-    """Add IP to blacklist"""
-    ip = entry.get().strip()
-    if ip and ip not in blocklist:
-        # Basic IP validation
-        parts = ip.split('.')
-        if len(parts) == 4 and all(p.isdigit() and 0 <= int(p) <= 255 for p in parts):
-            blocklist.append(ip)
-            listbox.insert(tk.END, ip)
-            save_blocklists([], blocklist)  # Save after adding
-            messagebox.showinfo("Success", f"Added IP: {ip}")
+        if blocked:
+            status = '🚫'
+            tag = 'blocked'
+        elif cached:
+            status = '💾'
+            tag = 'cached'
+        elif success:
+            status = '✓'
+            tag = 'success'
         else:
-            messagebox.showerror("Invalid IP", "Please enter a valid IPv4 address")
-    elif ip in blocklist:
-        messagebox.showwarning("Duplicate", f"IP already in blacklist: {ip}")
-    entry.delete(0, tk.END)
-
-def remove_ip(listbox, blocklist):
-    """Remove IP from blacklist"""
-    selected = listbox.curselection()
-    if selected:
-        ip = listbox.get(selected[0])
-        blocklist.remove(ip)
-        listbox.delete(selected[0])
-        save_blocklists([], blocklist)  # Save after removing
-        messagebox.showinfo("Removed", f"Removed IP: {ip}")
-
-def import_domain_list(listbox, blocklist):
-    """Import domains from file"""
-    file = filedialog.askopenfilename(
-        title="Select Domain List File",
-        filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
-    )
-    if file:
-        try:
-            count = 0
-            with open(file, 'r') as f:
-                for line in f:
-                    domain = line.strip().lower()
-                    if domain and not domain.startswith('#') and domain not in blocklist:
-                        blocklist.append(domain)
-                        count += 1
-            
-            # Refresh listbox
-            listbox.delete(0, tk.END)
-            for domain in blocklist:
-                listbox.insert(tk.END, domain)
-            
-            save_blocklists(blocklist, [])
-            messagebox.showinfo("Success", f"Imported {count} domains")
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to import: {e}")
-
-def export_logs(all_logs):
-    """Export logs to CSV"""
-    if not all_logs:
-        messagebox.showinfo("No Data", "No logs to export yet.")
-        return
-    
-    file = filedialog.asksaveasfilename(
-        defaultextension=".csv",
-        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")]
-    )
-    if file:
-        try:
-            with open(file, 'w', newline='', encoding='utf-8') as f:
-                writer = csv.writer(f)
-                writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details', 'Status'])
-                writer.writerows(all_logs)
-            messagebox.showinfo("Success", f"Exported {len(all_logs)} logs to {file}")
-        except Exception as e:
-            messagebox.showerror("Error", f"Export failed: {e}")
-
-def clear_logs(all_logs, tree):
-    """Clear all logs"""
-    if messagebox.askyesno("Confirm", "Clear all logs? This cannot be undone."):
-        all_logs.clear()
-        for item in tree.get_children():
-            tree.delete(item)
-        messagebox.showinfo("Cleared", "All logs cleared")
-
-def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
-    """Create main GUI"""
-    root = tk.Tk()
-    root.title("NetGuard DNS Monitor v1.0.0 - Network Security Dashboard")
-    root.geometry("1200x900")
-    
-    # Load saved blocklists
-    load_blocklists(domain_blocklist, ip_blacklist)
-    
-    # Create main notebook
-    notebook = ttk.Notebook(root)
-    notebook.pack(expand=True, fill='both', padx=5, pady=5)
-    
-    # ========== TAB 1: LIVE LOGS ==========
-    logs_frame = ttk.Frame(notebook)
-    notebook.add(logs_frame, text='📝 Live Logs')
-    
-    # Controls frame
-    controls_frame = ttk.Frame(logs_frame)
-    controls_frame.pack(fill='x', pady=5)
-    
-    # Treeview for logs
-    tree_frame = ttk.Frame(logs_frame)
-    tree_frame.pack(expand=True, fill='both', padx=5, pady=5)
-    
-    # Scrollbars
-    tree_scroll_y = ttk.Scrollbar(tree_frame, orient='vertical')
-    tree_scroll_x = ttk.Scrollbar(tree_frame, orient='horizontal')
-    
-    tree = ttk.Treeview(
-        tree_frame,
-        columns=('Timestamp', 'Source IP', 'Query Domain', 'Type', 'Details'),
-        show='headings',
-        yscrollcommand=tree_scroll_y.set,
-        xscrollcommand=tree_scroll_x.set
-    )
-    
-    tree_scroll_y.config(command=tree.yview)
-    tree_scroll_x.config(command=tree.xview)
-    
-    # Column configuration
-    tree.heading('Timestamp', text='Timestamp')
-    tree.heading('Source IP', text='Source IP')
-    tree.heading('Query Domain', text='Query Domain')
-    tree.heading('Type', text='Type')
-    tree.heading('Details', text='Details')
-    
-    tree.column('Timestamp', width=150)
-    tree.column('Source IP', width=120)
-    tree.column('Query Domain', width=300)
-    tree.column('Type', width=80)
-    tree.column('Details', width=200)
-    
-    tree.pack(side='left', expand=True, fill='both')
-    tree_scroll_y.pack(side='right', fill='y')
-    tree_scroll_x.pack(side='bottom', fill='x')
-    
-    # Tag colors
-    tree.tag_configure('safe', background='#90EE90')
-    tree.tag_configure('malicious', background='#FFB6C1')
-    tree.tag_configure('failed', background='#FFE4B5')
-    
-    paused = [False]
-    
-    def toggle_pause():
-        paused[0] = not paused[0]
-        pause_btn.config(
-            text="▶️ Resume Logs" if paused[0] else "⏸️ Pause Logs",
-            style='Accent.TButton' if paused[0] else 'TButton'
-        )
-    
-    # Control buttons
-    pause_btn = ttk.Button(controls_frame, text="⏸️ Pause Logs", command=toggle_pause)
-    pause_btn.pack(side='left', padx=5)
-    
-    export_btn = ttk.Button(controls_frame, text="💾 Export to CSV", 
-                            command=lambda: export_logs(all_logs))
-    export_btn.pack(side='left', padx=5)
-    
-    clear_btn = ttk.Button(controls_frame, text="🗑️ Clear Logs", 
-                           command=lambda: clear_logs(all_logs, tree))
-    clear_btn.pack(side='left', padx=5)
-    
-    # ========== TAB 2: STATISTICS ==========
-    stats_frame = ttk.Frame(notebook)
-    notebook.add(stats_frame, text='📊 Statistics')
-    
-    # Refresh button for stats
-    refresh_stats_btn = ttk.Button(stats_frame, text="🔄 Refresh Statistics",
-                                    command=lambda: update_stats(stats_frame, all_logs))
-    refresh_stats_btn.pack(pady=5)
-    
-    # ========== TAB 3: BLOCKLISTS ==========
-    block_frame = ttk.Frame(notebook)
-    notebook.add(block_frame, text='🛡️ Blocklists')
-    
-    # Create two columns
-    left_block_frame = ttk.Frame(block_frame)
-    left_block_frame.pack(side='left', fill='both', expand=True, padx=10, pady=10)
-    
-    right_block_frame = ttk.Frame(block_frame)
-    right_block_frame.pack(side='right', fill='both', expand=True, padx=10, pady=10)
-    
-    # Domain Blocklist Section
-    domain_label = tk.Label(left_block_frame, text="🌐 Domain Blocklist", 
-                            font=('Arial', 12, 'bold'))
-    domain_label.pack(pady=5)
-    
-    domain_entry_frame = ttk.Frame(left_block_frame)
-    domain_entry_frame.pack(fill='x', pady=5)
-    
-    domain_entry = tk.Entry(domain_entry_frame, width=30)
-    domain_entry.pack(side='left', padx=5)
-    
-    add_domain_btn = ttk.Button(domain_entry_frame, text="➕ Add", 
-                                command=lambda: add_domain(domain_entry, domain_listbox, domain_blocklist))
-    add_domain_btn.pack(side='left', padx=2)
-    
-    import_domain_btn = ttk.Button(domain_entry_frame, text="📁 Import", 
-                                   command=lambda: import_domain_list(domain_listbox, domain_blocklist))
-    import_domain_btn.pack(side='left', padx=2)
-    
-    domain_scroll = ttk.Scrollbar(left_block_frame)
-    domain_scroll.pack(side='right', fill='y')
-    
-    domain_listbox = tk.Listbox(left_block_frame, height=20, yscrollcommand=domain_scroll.set)
-    domain_listbox.pack(fill='both', expand=True)
-    domain_scroll.config(command=domain_listbox.yview)
-    
-    remove_domain_btn = ttk.Button(left_block_frame, text="❌ Remove Selected", 
-                                   command=lambda: remove_domain(domain_listbox, domain_blocklist))
-    remove_domain_btn.pack(pady=5)
-    
-    domain_count_label = tk.Label(left_block_frame, text="Total: 0 domains")
-    domain_count_label.pack()
-    
-    # IP Blacklist Section
-    ip_label = tk.Label(right_block_frame, text="🚫 IP Blacklist", 
-                       font=('Arial', 12, 'bold'))
-    ip_label.pack(pady=5)
-    
-    ip_entry_frame = ttk.Frame(right_block_frame)
-    ip_entry_frame.pack(fill='x', pady=5)
-    
-    ip_entry = tk.Entry(ip_entry_frame, width=30)
-    ip_entry.pack(side='left', padx=5)
-    
-    add_ip_btn = ttk.Button(ip_entry_frame, text="➕ Add", 
-                           command=lambda: add_ip(ip_entry, ip_listbox, ip_blacklist))
-    add_ip_btn.pack(side='left', padx=2)
-    
-    ip_scroll = ttk.Scrollbar(right_block_frame)
-    ip_scroll.pack(side='right', fill='y')
-    
-    ip_listbox = tk.Listbox(right_block_frame, height=20, yscrollcommand=ip_scroll.set)
-    ip_listbox.pack(fill='both', expand=True)
-    ip_scroll.config(command=ip_listbox.yview)
-    
-    remove_ip_btn = ttk.Button(right_block_frame, text="❌ Remove Selected", 
-                               command=lambda: remove_ip(ip_listbox, ip_blacklist))
-    remove_ip_btn.pack(pady=5)
-    
-    ip_count_label = tk.Label(right_block_frame, text="Total: 0 IPs")
-    ip_count_label.pack()
-    
-    # ========== STATUS BAR ==========
-    status_bar = tk.Label(root, text="📡 Queries: 0 | 🛡️ Blocked: 0 | ⚡ Cache Hits: 0", 
-                         bd=1, relief=tk.SUNKEN, anchor=tk.W, font=('Arial', 10))
-    status_bar.pack(side=tk.BOTTOM, fill=tk.X)
-    
-    def update_status_bar():
-        total = len(all_logs)
-        blocked = sum(1 for log in all_logs if log[-1] in ['blocked_ip', 'blocked_domain'])
-        cached = sum(1 for log in all_logs if 'cached' in log[4].lower())
+            status = '✗'
+            tag = 'failed'
         
-        domain_count_label.config(text=f"Total: {len(domain_blocklist)} domains")
-        ip_count_label.config(text=f"Total: {len(ip_blacklist)} IPs")
+        self.tree.insert('', 0, 
+                        values=(timestamp, src_ip, query_name, query_type, details, status),
+                        tags=(tag,))
+    
+    def update_logs(self):
+        if self.paused:
+            return
         
-        status_bar.config(
-            text=f"📡 Queries: {total:,} | 🛡️ Blocked: {blocked:,} | ⚡ Cache: {cached:,} | "
-                 f"🌐 Blocklist: {len(domain_blocklist)} | 🚫 IP Blacklist: {len(ip_blacklist)}"
+        count = 0
+        try:
+            while count < 50:
+                item = self.log_queue.get_nowait()
+                
+                # Handle alerts
+                if item[0] == 'ALERT':
+                    self.display_alert(item[1])
+                else:
+                    # Regular log entry
+                    if self.matches_filter(item):
+                        self.insert_log_entry(item)
+                count += 1
+        except queue.Empty:
+            pass
+    
+    def update_stats(self):
+        # Only update every 2 seconds to avoid performance issues
+        current_time = datetime.datetime.now().timestamp()
+        if current_time - self.last_stats_update < 2:
+            return
+        
+        self.last_stats_update = current_time
+        
+        if self.notebook.index(self.notebook.select()) != 1:
+            return
+        
+        for widget in self.stats_frame.winfo_children():
+            widget.destroy()
+        
+        # Performance metrics
+        perf_stats = self.stats_tracker.get_stats()
+        cache_stats = self.dns_cache.get_stats()
+        
+        metrics_frame = ttk.LabelFrame(self.stats_frame, text="📈 Performance Metrics", padding=10)
+        metrics_frame.pack(fill='x', padx=10, pady=5)
+        
+        metrics_text = f"""Total Queries: {perf_stats['total']:,}
+Failed Queries: {perf_stats['failed']:,} ({perf_stats['failed']/max(perf_stats['total'], 1)*100:.1f}%)
+Blocked Queries: {perf_stats['blocked']:,} ({perf_stats['blocked']/max(perf_stats['total'], 1)*100:.1f}%)
+Cached Queries: {perf_stats['cached']:,} ({perf_stats['cached']/max(perf_stats['total'], 1)*100:.1f}%)
+Average Response Time: {perf_stats['avg_time']:.2f} ms
+Success Rate: {(perf_stats['total']-perf_stats['failed'])/max(perf_stats['total'], 1)*100:.1f}%
+
+Cache Hit Rate: {cache_stats['hit_rate']:.1f}% ({cache_stats['hits']}/{cache_stats['hits'] + cache_stats['misses']} hits)
+Cache Size: {cache_stats['size']} entries"""
+        
+        tk.Label(metrics_frame, text=metrics_text, justify='left', 
+                font=('Courier', 10)).pack(anchor='w')
+        
+        # Activity summary
+        summary_frame = ttk.LabelFrame(self.stats_frame, text="📋 Activity Summary", padding=10)
+        summary_frame.pack(fill='x', padx=10, pady=5)
+        
+        stats_text = tk.Text(summary_frame, wrap='word', height=12, state='normal')
+        stats_text.insert(tk.END, compute_stats(self.all_logs))
+        stats_text.config(state='disabled')
+        stats_text.pack(fill='x')
+        
+        self.create_charts()
+    
+    def create_charts(self):
+        if not self.all_logs:
+            return
+        
+        # Query types
+        type_counter = Counter(log[3] for log in self.all_logs)
+        if type_counter:
+            fig = Figure(figsize=(5, 3.5), dpi=100)
+            ax = fig.add_subplot(111)
+            ax.pie(list(type_counter.values()), labels=list(type_counter.keys()),
+                   autopct='%1.1f%%', startangle=90)
+            ax.set_title('Query Types Distribution')
+            
+            canvas = FigureCanvasTkAgg(fig, master=self.stats_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(pady=10, fill='both', expand=True)
+        
+        # Top domains
+        domain_counter = Counter(log[2] for log in self.all_logs)
+        top_domains = domain_counter.most_common(10)
+        if top_domains:
+            domains, counts = zip(*top_domains)
+            
+            fig = Figure(figsize=(6, 4), dpi=100)
+            ax = fig.add_subplot(111)
+            ax.barh(domains, counts, color='skyblue')
+            ax.set_title('Top 10 Requested Domains')
+            ax.set_xlabel('Request Count')
+            ax.invert_yaxis()
+            fig.tight_layout()
+            
+            canvas = FigureCanvasTkAgg(fig, master=self.stats_frame)
+            canvas.draw()
+            canvas.get_tk_widget().pack(pady=10, fill='both', expand=True)
+    
+    def update_gui(self):
+        self.update_logs()
+        
+        if self.notebook.index(self.notebook.select()) == 1:
+            self.update_stats()
+        
+        total = self.stats_tracker.get_stats()['total']
+        blocked = self.stats_tracker.get_stats()['blocked']
+        cached = self.stats_tracker.get_stats()['cached']
+        status_text = f"Queries: {total:,} | Blocked: {blocked:,} | Cached: {cached:,} | "
+        status_text += "PAUSED" if self.paused else "Running ✓"
+        self.status_bar.config(text=status_text)
+        
+        self.root.after(500, self.update_gui)
+    
+    def add_blocked_domain(self):
+        domain = simpledialog.askstring("Add Blocked Domain", "Enter domain to block:")
+        if domain:
+            self.blocklist.add_blocked(domain)
+            self.update_blocklist_display()
+            messagebox.showinfo("Success", f"Blocked: {domain}")
+    
+    def add_allowed_domain(self):
+        domain = simpledialog.askstring("Add Allowed Domain", "Enter domain to allow:")
+        if domain:
+            self.blocklist.add_allowed(domain)
+            self.update_blocklist_display()
+            messagebox.showinfo("Success", f"Allowed: {domain}")
+    
+    def remove_blocked(self):
+        selection = self.blocked_listbox.curselection()
+        if selection:
+            domain = self.blocked_listbox.get(selection[0])
+            self.blocklist.remove_blocked(domain)
+            self.update_blocklist_display()
+    
+    def remove_allowed(self):
+        selection = self.allowed_listbox.curselection()
+        if selection:
+            domain = self.allowed_listbox.get(selection[0])
+            self.blocklist.remove_allowed(domain)
+            self.update_blocklist_display()
+    
+    def load_default_blocklist(self):
+        self.blocklist.load_default_blocklist()
+        self.update_blocklist_display()
+        messagebox.showinfo("Success", "Loaded default ad/tracker blocklist")
+    
+    def update_blocklist_display(self):
+        blocked, allowed = self.blocklist.get_lists()
+        
+        self.blocked_listbox.delete(0, tk.END)
+        for domain in sorted(blocked):
+            self.blocked_listbox.insert(tk.END, domain)
+        
+        self.allowed_listbox.delete(0, tk.END)
+        for domain in sorted(allowed):
+            self.allowed_listbox.insert(tk.END, domain)
+    
+    def display_alert(self, alert):
+        timestamp = datetime.datetime.now().strftime('%H:%M:%S')
+        severity = alert['severity']
+        message = f"[{timestamp}] [{severity}] {alert['message']}\n"
+        
+        self.alerts_text.insert(tk.END, message, severity)
+        self.alerts_text.see(tk.END)
+    
+    def clear_alerts(self):
+        self.alerts_text.delete(1.0, tk.END)
+    
+    def export_logs(self):
+        if not self.all_logs:
+            messagebox.showinfo("No Data", "No logs to export yet.")
+            return
+        
+        filename = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+            initialfile=f"dns_logs_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
         )
-        root.after(2000, update_status_bar)
+        
+        if filename:
+            try:
+                with open(filename, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(['Timestamp', 'Source IP', 'Query Domain', 
+                                   'Type', 'Details', 'Success', 'Blocked', 'Cached'])
+                    writer.writerows(self.all_logs)
+                messagebox.showinfo("Success", f"Exported {len(self.all_logs)} logs")
+            except Exception as e:
+                messagebox.showerror("Error", f"Failed to export: {e}")
     
-    update_status_bar()
+    def clear_logs(self):
+        if messagebox.askyesno("Confirm", "Clear all logs?"):
+            self.all_logs.clear()
+            for item in self.tree.get_children():
+                self.tree.delete(item)
     
-    # Start GUI update loop
-    root.after(100, update_gui, root, tree, log_queue, all_logs, stats_frame, 
-               domain_listbox, ip_listbox, domain_blocklist, ip_blacklist, paused, notebook)
+    def clear_cache(self):
+        if messagebox.askyesno("Confirm", "Clear DNS cache?"):
+            self.dns_cache.cache.clear()
+            messagebox.showinfo("Success", "DNS cache cleared")
     
-    # Save blocklists on exit
-    def on_closing():
-        save_blocklists(domain_blocklist, ip_blacklist)
-        root.destroy()
+    def show_cache_stats(self):
+        stats = self.dns_cache.get_stats()
+        msg = f"""DNS Cache Statistics:
+        
+Cache Size: {stats['size']} entries
+Cache Hits: {stats['hits']:,}
+Cache Misses: {stats['misses']:,}
+Hit Rate: {stats['hit_rate']:.1f}%
+
+A higher hit rate means better performance!"""
+        messagebox.showinfo("Cache Statistics", msg)
     
-    root.protocol("WM_DELETE_WINDOW", on_closing)
-    root.mainloop()
-    #test
+    def toggle_pause(self):
+        self.paused = not self.paused
+        status = "PAUSED" if self.paused else "Running"
+        messagebox.showinfo("Status", f"Logging {status}")
+    
+    def show_about(self):
+        about_text = """DNS Network Activity Monitor v2.0
+Final Year Cybersecurity Project
+
+Features:
+• Real-time DNS query monitoring
+• DNS caching for improved performance
+• Blocklist/Allowlist management
+• Anomaly detection & security alerts
+• Traffic analysis & statistics
+• CSV export capabilities
+
+This tool helps monitor network activity,
+block unwanted domains, and detect potential
+security threats in real-time."""
+        
+        messagebox.showinfo("About", about_text)
+    
+    def run(self):
+        self.root.mainloop()
+
+def create_gui(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector):
+    app = DNSMonitorGUI(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector)
+    app.run()
