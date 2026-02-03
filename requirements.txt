@@ -1,3 +1,56 @@
-#tkinter --> usually they are already in python lib so its not needed to install
-dnslib>=0.9.23
-matplotlib>=3.5.0
+# NetGuard DNS Monitor - Python Dependencies
+# Python 3.8+ required
+
+# Core DNS functionality
+dnslib==0.9.23
+
+# GUI framework (usually included with Python, but specifying for completeness)
+# tkinter is built-in, but on some Linux systems may need: python3-tk
+
+# Data visualization
+matplotlib==3.7.1
+numpy==1.24.3
+
+# Optional: Enhanced features
+# Uncomment below for additional functionality
+
+# CSV handling (built-in, no install needed)
+# csv
+
+# Threading (built-in, no install needed)
+# threading
+
+# Socket programming (built-in, no install needed)
+# socket
+
+# Datetime handling (built-in, no install needed)
+# datetime
+
+# Collections utilities (built-in, no install needed)
+# collections
+
+# Queue for thread communication (built-in, no install needed)
+# queue
+
+# ============================================
+# Development Dependencies (Optional)
+# Uncomment for development environment
+# ============================================
+
+# pytest==7.4.0              # Testing framework
+# pytest-cov==4.1.0          # Code coverage
+# black==23.7.0              # Code formatting
+# flake8==6.0.0              # Linting
+# mypy==1.4.1                # Type checking
+# pylint==2.17.4             # Code analysis
+
+# ============================================
+# Platform-specific notes
+# ============================================
+
+# Windows: No additional requirements
+# Linux: May need to install python3-tk separately
+#   Ubuntu/Debian: sudo apt install python3-tk
+#   Fedora: sudo dnf install python3-tkinter
+# macOS: May need to install python-tk via Homebrew
+#   brew install python-tk
