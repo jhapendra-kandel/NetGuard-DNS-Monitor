@@ -1,166 +1,80 @@
-"""
-Statistics Module
-Computes and formats DNS query statistics for display.
-Enhanced version with comprehensive network monitoring metrics.
-"""
 from collections import Counter
 import datetime
 
 def compute_stats(all_logs):
-    """
-    Compute comprehensive DNS statistics from log entries.
-    
-    Log format: (timestamp, src_ip, query_name, query_type, details, status)
-    Status values: 'safe', 'blocked_ip', 'blocked_domain', 'failed'
-    """
+    """Compute comprehensive statistics from logs"""
     if not all_logs:
-        return "No data yet. Start monitoring DNS queries!"
+        return "No data yet.\n\nConfigure devices to use this PC as DNS server to start monitoring."
     
     total_queries = len(all_logs)
-    start_time = all_logs[0][0] if all_logs else 'N/A'
-    end_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
-    # -----------------------------
-    # Enhanced Status Categorization
-    # -----------------------------
-    safe_queries = sum(1 for log in all_logs if log[5] == 'safe')
-    blocked_domain = sum(1 for log in all_logs if log[5] == 'blocked_domain')
-    blocked_ip = sum(1 for log in all_logs if log[5] == 'blocked_ip')
-    failed_queries = sum(1 for log in all_logs if log[5] == 'failed')
-    cached_queries = sum(1 for log in all_logs if 'cached' in log[4].lower())
+    # Time range
+    start_time = all_logs[0][0]
+    end_time = all_logs[-1][0]
     
-    total_blocked = blocked_domain + blocked_ip
+    # Success/failure/blocked/cached tracking
+    successful = sum(1 for log in all_logs if log[5])  # Index 5 is success
+    failed = sum(1 for log in all_logs if not log[5])
+    blocked = sum(1 for log in all_logs if log[6])  # Index 6 is blocked
+    cached = sum(1 for log in all_logs if log[7])  # Index 7 is cached
     
-    # Calculate percentages (safety check)
-    if total_queries > 0:
-        safe_pct = (safe_queries / total_queries) * 100
-        blocked_pct = (total_blocked / total_queries) * 100
-        failed_pct = (failed_queries / total_queries) * 100
-        cached_pct = (cached_queries / total_queries) * 100
-    else:
-        safe_pct = blocked_pct = failed_pct = cached_pct = 0.0
-    
-    # -----------------------------
-    # Network Activity Counters
-    # -----------------------------
-    ip_counter = Counter(log[1] for log in all_logs)      # log[1] = source IP
-    top_ips = ip_counter.most_common(10)
-    
-    domain_counter = Counter(log[2] for log in all_logs)  # log[2] = domain
-    top_domains = domain_counter.most_common(10)
-    
-    type_counter = Counter(log[3] for log in all_logs)    # log[3] = query type
-    
-    # -----------------------------
-    # Blocked Domains & IPs Analysis
-    # -----------------------------
-    blocked_domains_list = [log[2] for log in all_logs if log[5] == 'blocked_domain']
-    blocked_ips_list = [log[1] for log in all_logs if log[5] == 'blocked_ip']
-    
-    blocked_domain_counter = Counter(blocked_domains_list)
-    blocked_ip_counter = Counter(blocked_ips_list)
-    
-    top_blocked_domains = blocked_domain_counter.most_common(5)
-    top_blocked_ips = blocked_ip_counter.most_common(5)
-    
-    # -----------------------------
-    # Time-based Analysis
-    # -----------------------------
-    try:
-        if len(all_logs) > 1:
-            first_time = datetime.datetime.strptime(all_logs[0][0], '%Y-%m-%d %H:%M:%S')
-            last_time = datetime.datetime.strptime(all_logs[-1][0], '%Y-%m-%d %H:%M:%S')
-            duration = (last_time - first_time).total_seconds()
-            if duration > 0:
-                qps = total_queries / duration  # Queries per second
-            else:
-                qps = 0
-        else:
-            qps = 0
-    except:
-        qps = 0
-    
-    # -----------------------------
-    # Unique counts
-    # -----------------------------
+    # IP analysis
+    ip_counter = Counter(log[1] for log in all_logs)
+    top_ips = ip_counter.most_common(5)
     unique_ips = len(ip_counter)
+    
+    # Domain analysis
+    domain_counter = Counter(log[2] for log in all_logs)
+    top_domains = domain_counter.most_common(5)
     unique_domains = len(domain_counter)
     
-    # -----------------------------
-    # Build Comprehensive Stats String
-    # -----------------------------
-    stats_str = "=" * 50 + "\n"
-    stats_str += "DNS NETWORK ACTIVITY MONITOR - STATISTICS\n"
-    stats_str += "=" * 50 + "\n\n"
+    # Query type analysis
+    type_counter = Counter(log[3] for log in all_logs)
     
-    stats_str += f"📊 OVERVIEW\n"
-    stats_str += f"{'─' * 50}\n"
+    # Build statistics string
+    stats_str = f"📊 OVERVIEW\n"
+    stats_str += f"{'─' * 60}\n"
     stats_str += f"Total DNS Queries: {total_queries:,}\n"
-    stats_str += f"Monitoring Period: {start_time} to {end_time}\n"
-    stats_str += f"Average Query Rate: {qps:.2f} queries/second\n"
-    stats_str += f"Unique Source IPs: {unique_ips}\n"
-    stats_str += f"Unique Domains Queried: {unique_domains}\n\n"
+    stats_str += f"  ✓ Successful: {successful:,} ({successful/total_queries*100:.1f}%)\n"
+    stats_str += f"  ✗ Failed: {failed:,} ({failed/total_queries*100:.1f}%)\n"
+    stats_str += f"  🚫 Blocked: {blocked:,} ({blocked/total_queries*100:.1f}%)\n"
+    stats_str += f"  💾 Cached: {cached:,} ({cached/total_queries*100:.1f}%)\n"
+    stats_str += f"\nTime Range: {start_time} to {end_time}\n"
+    stats_str += f"Unique IPs: {unique_ips} | Unique Domains: {unique_domains}\n\n"
     
-    stats_str += f"🔐 SECURITY STATUS\n"
-    stats_str += f"{'─' * 50}\n"
-    stats_str += f"✅ Safe Queries: {safe_queries:,} ({safe_pct:.1f}%)\n"
-    stats_str += f"🚫 Blocked Queries: {total_blocked:,} ({blocked_pct:.1f}%)\n"
-    stats_str += f"   ├─ Blocked Domains: {blocked_domain:,}\n"
-    stats_str += f"   └─ Blocked IPs: {blocked_ip:,}\n"
-    stats_str += f"❌ Failed Queries: {failed_queries:,} ({failed_pct:.1f}%)\n"
+    stats_str += f"🌐 TOP ACTIVE DEVICES (by query count)\n"
+    stats_str += f"{'─' * 60}\n"
+    for i, (ip, count) in enumerate(top_ips, 1):
+        percentage = (count / total_queries) * 100
+        bar = '█' * min(int(percentage / 2), 30)
+        stats_str += f"{i}. {ip:15s} │ {count:5d} queries ({percentage:5.1f}%) {bar}\n"
     
-    if cached_queries > 0:
-        stats_str += f"⚡ Cached Responses: {cached_queries:,} ({cached_pct:.1f}%)\n"
-    stats_str += "\n"
+    stats_str += f"\n📱 TOP REQUESTED DOMAINS/SERVICES\n"
+    stats_str += f"{'─' * 60}\n"
+    for i, (domain, count) in enumerate(top_domains, 1):
+        percentage = (count / total_queries) * 100
+        display_domain = domain[:45] + '...' if len(domain) > 45 else domain
+        stats_str += f"{i}. {display_domain:48s} │ {count:4d} ({percentage:5.1f}%)\n"
     
-    stats_str += f"🌐 TOP ACTIVE IPs (Network Usage)\n"
-    stats_str += f"{'─' * 50}\n"
-    if top_ips:
-        for idx, (ip, count) in enumerate(top_ips, 1):
-            pct = (count / total_queries) * 100
-            stats_str += f"{idx:2}. {ip:15} → {count:4} queries ({pct:.1f}%)\n"
-    else:
-        stats_str += "No IP data available\n"
-    stats_str += "\n"
+    stats_str += f"\n🔍 QUERY TYPE BREAKDOWN\n"
+    stats_str += f"{'─' * 60}\n"
+    for qtype, count in type_counter.most_common():
+        percentage = (count / total_queries) * 100
+        bar = '█' * min(int(percentage / 3), 20)
+        stats_str += f"{qtype:10s} │ {count:5d} queries ({percentage:5.1f}%) {bar}\n"
     
-    stats_str += f"🔍 TOP REQUESTED DOMAINS/APPLICATIONS\n"
-    stats_str += f"{'─' * 50}\n"
-    if top_domains:
-        for idx, (domain, count) in enumerate(top_domains, 1):
-            pct = (count / total_queries) * 100
-            # Truncate long domains for display
-            display_domain = domain[:45] + "..." if len(domain) > 45 else domain
-            stats_str += f"{idx:2}. {display_domain:48} → {count:4} ({pct:.1f}%)\n"
-    else:
-        stats_str += "No domain data available\n"
-    stats_str += "\n"
+    # Performance insights
+    cache_hit_rate = (cached / total_queries * 100) if total_queries > 0 else 0
+    block_rate = (blocked / total_queries * 100) if total_queries > 0 else 0
     
-    if top_blocked_domains:
-        stats_str += f"⚠️  TOP BLOCKED DOMAINS (Security Threats)\n"
-        stats_str += f"{'─' * 50}\n"
-        for idx, (domain, count) in enumerate(top_blocked_domains, 1):
-            display_domain = domain[:45] + "..." if len(domain) > 45 else domain
-            stats_str += f"{idx}. {display_domain} → {count} attempts\n"
-        stats_str += "\n"
+    stats_str += f"\n💡 PERFORMANCE INSIGHTS\n"
+    stats_str += f"{'─' * 60}\n"
+    stats_str += f"Cache Efficiency: {cache_hit_rate:.1f}% of queries served from cache\n"
+    stats_str += f"Security: {block_rate:.1f}% of queries blocked by filters\n"
     
-    if top_blocked_ips:
-        stats_str += f"🛡️  TOP BLOCKED IPs (Blacklisted Sources)\n"
-        stats_str += f"{'─' * 50}\n"
-        for idx, (ip, count) in enumerate(top_blocked_ips, 1):
-            stats_str += f"{idx}. {ip} → {count} blocked attempts\n"
-        stats_str += "\n"
-    
-    stats_str += f"📋 QUERY TYPE DISTRIBUTION\n"
-    stats_str += f"{'─' * 50}\n"
-    if type_counter:
-        # Sort by count descending
-        sorted_types = sorted(type_counter.items(), key=lambda x: x[1], reverse=True)
-        for qtype, count in sorted_types:
-            pct = (count / total_queries) * 100
-            stats_str += f"{qtype:10} → {count:5} queries ({pct:.1f}%)\n"
-    else:
-        stats_str += "No query type data available\n"
-    
-    stats_str += "\n" + "=" * 50 + "\n"
+    if cache_hit_rate > 30:
+        stats_str += f"✓ Great cache performance! Reducing network load.\n"
+    if block_rate > 10:
+        stats_str += f"✓ Blocklist actively protecting your network.\n"
     
     return stats_str
