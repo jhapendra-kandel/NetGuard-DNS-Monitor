@@ -496,3 +496,4 @@ def create_gui(log_queue, all_logs, domain_blocklist, ip_blacklist):
     
     root.protocol("WM_DELETE_WINDOW", on_closing)
     root.mainloop()
+    #test
