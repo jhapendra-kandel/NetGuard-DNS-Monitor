@@ -228,3 +228,6 @@ alerts.log
 # Personal Noting files
 notes_further_updates.txt
 
+#test file creatde by app
+allowlist.json
+blocklist.json
