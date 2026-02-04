@@ -7,7 +7,8 @@
 > **Real-time DNS Monitoring & Network Security System**  
 > A comprehensive DNS proxy server with advanced threat detection, caching, and analytics capabilities.
 
-**Final Year Cybersecurity Project** | Network Security & Threat Intelligence
+**1st Year Python Programming Project** | Introduction to Programming Module  
+**Softwarica College of IT & E-Commerce** | In collaboration with Coventry University
 
 ---
 
@@ -34,7 +35,7 @@
 
 ## 🌟 Overview
 
-NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring system designed for real-time threat detection, performance optimization, and comprehensive network analytics. Built as a Final Year Cybersecurity Project, it demonstrates practical implementation of network security concepts, multithreading, caching algorithms, and anomaly detection.
+NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring system designed for real-time threat detection, performance optimization, and comprehensive network analytics. Built as a 1st Year Python Programming Project for the Introduction to Programming module at Softwarica College of IT & E-Commerce (affiliated with Coventry University, UK), it demonstrates practical implementation of network security concepts, multithreading, caching algorithms, and GUI development.
 
 ### 🎯 Project Objectives
 
@@ -42,7 +43,7 @@ NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring syst
 2. **Threat Detection** - Identify suspicious patterns and potential security threats
 3. **Performance Optimization** - Implement intelligent caching to reduce latency
 4. **User Privacy** - Block tracking and advertising domains
-5. **Educational Value** - Demonstrate cybersecurity and network programming concepts
+5. **Educational Value** - Demonstrate Python programming and networking concepts
 
 ### 🏆 What Makes This Project Unique
 
@@ -194,21 +195,37 @@ cd NetGuard-DNS-Monitor
 
 ### Step 2: Create Virtual Environment (Recommended)
 
+**Why Virtual Environment?**
+- Isolates project dependencies
+- Prevents conflicts with system packages
+- Easy to manage and reproduce
+
 **Windows:**
 ```bash
+# Create virtual environment
 python -m venv venv
+
+# Activate virtual environment
 venv\Scripts\activate
+
+# You should see (venv) in your prompt
 ```
 
 **Linux/macOS:**
 ```bash
+# Create virtual environment
 python3 -m venv venv
+
+# Activate virtual environment
 source venv/bin/activate
+
+# You should see (venv) in your prompt
 ```
 
 ### Step 3: Install Dependencies
 
 ```bash
+# Make sure venv is activated (you should see (venv) in prompt)
 pip install -r requirements.txt
 ```
 
@@ -222,11 +239,47 @@ python main.py --help
 
 ## 🚦 Quick Start
 
-### Running the Application
+### One-Command Setup (Recommended)
+
+**Windows:**
+```bash
+# Run setup script (automatically creates venv and installs dependencies)
+setup.bat
+```
+
+**Linux/macOS:**
+```bash
+# Make script executable
+chmod +x setup.sh
+
+# Run setup script
+./setup.sh
+```
+
+### Manual Setup
+
+**Step 1: Create Virtual Environment**
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/macOS  
+python3 -m venv venv
+source venv/bin/activate
+```
+
+**Step 2: Install Dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+**Step 3: Run Application**
 
 **Windows (Administrator):**
 ```bash
-# Right-click Command Prompt → "Run as Administrator"
 python main.py
 ```
 
@@ -408,41 +461,34 @@ def load_default_blocklist(self):
 NetGuard-DNS-Monitor/
 │
 ├── 📄 main.py                    # Application entry point
-│   ├── Banner display
-│   ├── Component initialization
-│   └── Thread management
-│
 ├── 🌐 dns_server.py              # Core DNS server logic
-│   ├── DNSCache class           # Caching mechanism
-│   ├── DNSBlocklist class       # Domain filtering
-│   ├── AnomalyDetector class    # Threat detection
-│   ├── DNSStats class           # Statistics tracking
-│   └── Server thread functions
-│
 ├── 🖥️ gui.py                     # Tkinter GUI interface
-│   ├── DNSMonitorGUI class
-│   ├── Tab creation methods
-│   ├── Event handlers
-│   └── Update loops
-│
 ├── 📊 stats.py                   # Statistics computation
-│   └── compute_stats function
 │
 ├── 📋 requirements.txt           # Python dependencies
+├── 🔒 .gitignore                 # Git ignore rules
+├── 📜 LICENSE                    # MIT License
 │
-├── 📖 README.md                  # This file
+├── 🚀 setup.py                   # Automated setup script (Python)
+├── 🪟 setup.bat                  # Windows setup script
+├── 🐧 setup.sh                   # Linux/macOS setup script
+│
+├── 📖 README.md                  # Project overview (this file)
 ├── 📖 INSTALLATION.md            # Detailed setup guide
 ├── 📖 USAGE.md                   # User manual
-├── 📖 API.md                     # API documentation
-│
-├── 📁 docs/                      # Additional documentation
-│   ├── ARCHITECTURE.md          # System design
-│   ├── SECURITY.md              # Security features
-│   └── CONTRIBUTING.md          # Contribution guidelines
-│
-└── 📁 tests/                     # Test files (future)
-    └── test_dns_server.py
+├── 📖 QUICK_SETUP.md             # Quick start guide
+├── 📖 GIT_WORKFLOW.md            # Git commands and workflow
+├── 📖 CONTRIBUTING.md            # Contribution guidelines
+├── 📖 ARCHITECTURE.md            # Technical documentation
+├── 📖 CHANGELOG.md               # Version history
+├── 📖 PROJECT_SUMMARY.md         # Academic project summary
+└── 📖 FEATURES_ROADMAP.md        # Future enhancements
 ```
+
+**Key Files:**
+- **setup.bat / setup.sh** - One-command installation scripts
+- **GIT_WORKFLOW.md** - Complete Git guide with commit messages
+- **FEATURES_ROADMAP.md** - Planned improvements and enhancements
 
 ---
 
@@ -745,17 +791,22 @@ of this software and associated documentation files...
 
 ## 🎓 Academic Information
 
-**Project Type:** Final Year Cybersecurity Project  
-**Domain:** Network Security & Threat Intelligence  
+**Project Type:** 1st Year Python Programming Project  
+**Module:** Introduction to Programming  
+**Institution:** Softwarica College of IT & E-Commerce  
+**Affiliation:** Coventry University, UK  
 **Academic Year:** 2025-2026  
+
 **Skills Demonstrated:**
-- Network Programming
+- Python Programming Fundamentals
+- Object-Oriented Programming (OOP)
+- Network Programming with Sockets
 - Multithreaded Application Development
-- GUI Design & Implementation
-- DNS Protocol Implementation
-- Anomaly Detection Algorithms
-- Data Visualization
-- Software Architecture
+- GUI Design & Implementation (Tkinter)
+- DNS Protocol Understanding
+- Data Structures and Algorithms
+- Software Documentation
+- Version Control (Git/GitHub)
 
 ---
 

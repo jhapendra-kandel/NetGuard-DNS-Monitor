@@ -10,9 +10,12 @@
 |-------|---------|
 | **Project Name** | NetGuard DNS Monitor |
 | **Version** | 2.0.0 |
-| **Category** | Network Security & Threat Intelligence |
+| **Category** | Network Programming & Security |
 | **Primary Language** | Python 3.8+ |
-| **Project Type** | Final Year Cybersecurity Project |
+| **Project Type** | 1st Year Python Programming Project |
+| **Module** | Introduction to Programming |
+| **Institution** | Softwarica College of IT & E-Commerce |
+| **Affiliation** | Coventry University, UK |
 | **Academic Year** | 2025-2026 |
 | **Author** | Jhapendra Kandel |
 | **Repository** | [GitHub](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor) |
