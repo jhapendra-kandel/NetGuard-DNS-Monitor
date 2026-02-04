@@ -225,3 +225,6 @@ ip_blacklist.txt
 # Log files
 alerts.log
 
+# Personal Noting files
+notes_further_updates.txt
+
