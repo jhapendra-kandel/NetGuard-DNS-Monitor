@@ -4,6 +4,9 @@
 # Core DNS functionality
 dnslib==0.9.23
 
+# HTTP requests for GitHub blocklist import
+requests==2.31.0
+
 # GUI framework (usually included with Python, but specifying for completeness)
 # tkinter is built-in, but on some Linux systems may need: python3-tk
 
