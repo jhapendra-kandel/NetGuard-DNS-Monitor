@@ -37,6 +37,7 @@ class DNSCache:
         self.hits = 0
         self.misses = 0
         self.max_size = max_size
+        self.enabled = True  # Cache can be toggled on/off
         
     def get(self, domain, qtype):
         """Get cached response if not expired
@@ -48,6 +49,11 @@ class DNSCache:
         Returns:
             bytes: Cached DNS response or None
         """
+        # Return None if cache is disabled
+        if not self.enabled:
+            self.misses += 1
+            return None
+            
         with self.lock:
             key = (domain, qtype)
             if key in self.cache:
@@ -70,6 +76,10 @@ class DNSCache:
             response (bytes): DNS response to cache
             ttl (int): Time to live in seconds (default 5 minutes)
         """
+        # Don't cache if disabled
+        if not self.enabled:
+            return
+            
         with self.lock:
             # If cache is full, remove oldest entry
             if len(self.cache) >= self.max_size:
@@ -223,6 +233,58 @@ class DNSBlocklist:
         except Exception as e:
             print(f"  Error importing: {e}")
             return 0
+    
+    def import_from_url(self, url):
+        """Import blocklist from URL (e.g., GitHub hosts file)
+        
+        Args:
+            url (str): URL to blocklist file
+            
+        Returns:
+            int: Number of domains imported
+        """
+        import requests
+        
+        try:
+            print(f"  Downloading blocklist from: {url}")
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+            
+            count = 0
+            for line in response.text.split('\n'):
+                line = line.strip()
+                
+                # Skip empty lines and comments
+                if not line or line.startswith('#'):
+                    continue
+                
+                # Parse hosts file format (IP domain)
+                parts = line.split()
+                if len(parts) >= 2:
+                    # Second part is the domain in hosts file format
+                    domain = parts[1].lower().strip()
+                    # Skip localhost entries
+                    if domain and domain not in ['localhost', 'localhost.localdomain', 'local']:
+                        # Skip IP addresses
+                        if not domain.replace('.', '').replace(':', '').isdigit():
+                            self.add_blocked(domain)
+                            count += 1
+                elif len(parts) == 1:
+                    # Plain domain list
+                    domain = parts[0].lower().strip()
+                    if domain and not domain.replace('.', '').replace(':', '').isdigit():
+                        self.add_blocked(domain)
+                        count += 1
+            
+            print(f"  Successfully imported {count} domains from URL")
+            return count
+            
+        except requests.RequestException as e:
+            print(f"  Error downloading blocklist: {e}")
+            raise Exception(f"Failed to download: {e}")
+        except Exception as e:
+            print(f"  Error parsing blocklist: {e}")
+            raise Exception(f"Failed to parse: {e}")
     
     def _save_lists(self):
         """Save blocklists to JSON files"""
