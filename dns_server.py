@@ -208,6 +208,38 @@ class DNSBlocklist:
             # More ad networks
             'adserver.com', 'ads.yahoo.com', 'amazon-adsystem.com',
             'bing.com/ads', 'facebook.com/tr', 'twitter.com/i/adsct',
+            
+            # Extended tracking/ad domains (v2.2.0)
+            'linkedin.com/analytics', 'branch.io', 'appsflyer.com',
+            'adjust.com', 'adsystem.com', 'adroll.com', 'bidswitch.net',
+            'demdex.net', 'omtrdc.net', 'everesttech.net', 'segment.com',
+            'amplitude.com', 'heap.io', 'fullstory.com', 'loggly.com',
+            
+            # Additional ad networks
+            'moatads.com', 'doubleverify.com', 'ias.com', 'integral-ad-science.com',
+            'adform.net', 'casalemedia.com', 'openx.net', 'sharethrough.com',
+            'triplelift.com', 'indexexchange.com', 'spotxchange.com', 'smartadserver.com',
+            'yieldmo.com', 'sovrn.com', 'lijit.com', 'rhythmone.com',
+            
+            # Tracking pixels and analytics
+            'pixel.facebook.com', 'pixel.ad', 'tracking.com', 'tr.snapchat.com',
+            'analytics.tiktok.com', 'ads.tiktok.com', 'analytics.twitter.com',
+            'ads.pinterest.com', 'analytics.pinterest.com', 'ads.reddit.com',
+            'events.reddit.com', 'pixel.reddit.com', 'analytics.yahoo.com',
+            
+            # Mobile ad networks
+            'admob.com', 'unity3d.com/ads', 'unityads.unity3d.com', 'vungle.com',
+            'chartboost.com', 'ironsrc.com', 'ironsource.mobi', 'mopub.com',
+            'inmobi.com', 'startapp.com', 'adcolony.com', 'fyber.com',
+            
+            # Data brokers and trackers
+            'bluekai.com', 'exelator.com', 'acxiom.com', 'liveramp.com',
+            'oracle.com/cx', 'tapad.com', 'drawbridge.com', 'crosswise.com',
+            'lotame.com', 'neustar.biz', 'rlcdn.com', 'krxd.net',
+            
+            # Retargeting and remarketing
+            'adsbygoogle.com', 'adskeeper.co.uk', 'revcontent.com', 'mgid.com',
+            'contentad.net', 'adblade.com', 'zergnet.com', 'nativo.com',
         ]
         
         for domain in common_ads:
@@ -353,9 +385,9 @@ class AnomalyDetector:
             self.ip_query_count[ip] = [t for t in self.ip_query_count[ip] 
                                        if current_time - t < 60]
             
-            # Check for excessive queries (>100 per minute)
+            # Check for excessive queries (>200 per minute)
             query_count = len(self.ip_query_count[ip])
-            if query_count > 100:
+            if query_count > 200:
                 # Check cooldown to avoid spam
                 cooldown_key = f"excessive_{ip}"
                 if cooldown_key not in self.alert_cooldown or \
