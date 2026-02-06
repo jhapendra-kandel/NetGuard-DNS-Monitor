@@ -5,7 +5,7 @@ A comprehensive DNS proxy server with real-time monitoring and threat detection
 Author: Jhapendra Kandel
 Project: 1st Year Python Programming
 Institution: Softwarica College of IT & E-Commerce (Coventry University)
-Version: 2.0
+Version: 2.2.0
 """
 
 import threading
@@ -19,7 +19,7 @@ from dns_server import (start_dns_server, DNSStats, DNSCache,
 from gui import create_gui
 
 # Version information
-VERSION = "2.0.0"
+VERSION = "2.2.0"
 AUTHOR = "Jhapendra Kandel"
 INSTITUTION = "Softwarica College (Coventry University)"
 
