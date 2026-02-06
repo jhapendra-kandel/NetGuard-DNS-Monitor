@@ -663,7 +663,7 @@ class DNSMonitorGUI:
                   command=self.import_blocklist_file).pack(side='left', padx=5)
         ttk.Button(btn_inner, text="🌐 Import GitHub", 
                   command=self.import_github_blocklist).pack(side='left', padx=5)
-        ttk.Button(btn_inner, text="⚡ Load Preinstalled (64K – Recommended)", 
+        ttk.Button(btn_inner, text="⚡ Load Preinstalled (64K)", 
                   command=self.load_preinstalled_blocklist).pack(side='left', padx=5)
         ttk.Button(btn_inner, text="📥 Load Defaults", 
                   command=self.load_default_blocklist).pack(side='left', padx=5)
@@ -953,25 +953,84 @@ class DNSMonitorGUI:
         self.allowed_count_label.config(text=f"Count: {len(allowed):,} (showing: {len(filtered_allowed):,})")
     
     def load_preinstalled_blocklist(self):
-        """Load preinstalled blocklist from local JSON file (fast local load)"""
-        messagebox.showinfo("Loading", "Loading preinstalled blocklist...")
+        """Show instructions for loading preinstalled blocklist manually"""
+        instructions = """⚡ LOAD PREINSTALLED BLOCKLIST (64K Domains)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ IMPORTANT: Loading large lists directly may crash the app!
+
+To safely use the preinstalled 64K blocklist, follow these steps:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 STEP 1: Open the App Folder
+   • Navigate to where NetGuard is installed
+   • You should see all the program files there
+
+📄 STEP 2: Find the Preinstalled Blocklist
+   • Look for: preinstalled-blocklist.json
+   • This file contains 64,300+ ad/tracking domains
+
+📋 STEP 3: Copy the Contents
+   • Open preinstalled-blocklist.json with Notepad
+   • Select All (Ctrl+A) and Copy (Ctrl+C)
+
+📝 STEP 4: Paste into Your Blocklist
+   • Open blocklist.json with Notepad
+   • Replace all contents with what you copied
+   • Or merge the lists if you have custom domains
+
+💾 STEP 5: Save and Restart
+   • Save blocklist.json (Ctrl+S)
+   • Close and restart NetGuard DNS Monitor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ BENEFITS:
+   • ~72% ad-blocking coverage
+   • No app lag or crashes
+   • Fast startup after restart
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"""
         
-        try:
-            with open('preinstalled-blocklist.json', 'r') as f:
-                domains = json.load(f)
-            
-            for domain in domains:
-                self.blocklist.add_blocked(domain)
-            
-            self.update_blocklist_display()
-            messagebox.showinfo("Success", "Loaded 64,300 domains! Estimated ad-blocking ~72%")
-        except FileNotFoundError:
-            messagebox.showerror("Error", "preinstalled-blocklist.json not found in program folder.")
-        except Exception as e:
-            messagebox.showerror("Error", f"Failed to load blocklist: {e}")
+        messagebox.showinfo("Load Preinstalled Blocklist - Instructions", instructions)
     
     def import_github_blocklist(self):
-        """Import from GitHub"""
+        """Import from GitHub with crash warning and manual instructions"""
+        # Show crash warning first
+        warning_msg = """⚠️ WARNING - APP MAY CRASH!
+
+Importing large blocklists from GitHub may cause the app to become unresponsive or crash completely.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 RECOMMENDED MANUAL METHOD:
+
+1. Download the blocklist file from GitHub manually
+2. Convert to JSON format (array of domains):
+   ["domain1.com", "domain2.com", "domain3.com"]
+3. Open blocklist.json in the app folder with Notepad
+4. Paste the domains and save
+5. Restart NetGuard DNS Monitor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This manual method is:
+✅ Faster loading
+✅ No app crashes
+✅ Works with any size list
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Do you still want to try the automatic import?
+(Not recommended for large lists)"""
+        
+        result = messagebox.askyesno("⚠️ Import Warning", warning_msg)
+        
+        if not result:
+            return
+        
         dialog = tk.Toplevel(self.root)
         dialog.title("Import from GitHub")
         dialog.geometry("650x450")
@@ -1053,7 +1112,40 @@ class DNSMonitorGUI:
         ttk.Button(btn_frame, text="Cancel", command=dialog.destroy).pack(side='left', padx=5)
     
     def import_blocklist_file(self):
-        """Import from file"""
+        """Import from file with crash warning and manual instructions"""
+        # Show crash warning first
+        warning_msg = """⚠️ WARNING - APP MAY CRASH!
+
+Importing large blocklist files may cause the app to become unresponsive or crash completely.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔧 RECOMMENDED MANUAL METHOD:
+
+1. Open your blocklist file with Notepad
+2. Convert to JSON format (array of domains):
+   ["domain1.com", "domain2.com", "domain3.com"]
+3. Open blocklist.json in the app folder with Notepad
+4. Paste the domains and save
+5. Restart NetGuard DNS Monitor
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This manual method is:
+✅ Faster loading
+✅ No app crashes
+✅ Works with any size list
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Do you still want to try the automatic import?
+(Not recommended for large files)"""
+        
+        result = messagebox.askyesno("⚠️ Import Warning", warning_msg)
+        
+        if not result:
+            return
+        
         filename = filedialog.askopenfilename(
             title="Select Blocklist File",
             filetypes=[("Text files", "*.txt"), ("All files", "*.*")]
