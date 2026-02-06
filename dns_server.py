@@ -385,7 +385,7 @@ class AnomalyDetector:
             self.ip_query_count[ip] = [t for t in self.ip_query_count[ip] 
                                        if current_time - t < 60]
             
-            # Check for excessive queries (>200 per minute)
+            # Check for excessive queries (>200 per minute) - v2.2.0 increased from 100
             query_count = len(self.ip_query_count[ip])
             if query_count > 200:
                 # Check cooldown to avoid spam
