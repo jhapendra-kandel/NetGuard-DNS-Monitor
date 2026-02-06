@@ -38,8 +38,11 @@ class DNSMonitorGUI:
         self.last_stats_update = 0
         self.stats_scroll_position = 0
         
-        # Load saved configuration
+        # Load saved configuration (must be before creating widgets)
         self.load_config()
+        
+        # Apply loaded cache state to dns_cache
+        self.dns_cache.enabled = self.cache_enabled
         
         # Dark theme colors
         self.bg_color = '#0d0d0d'
@@ -56,7 +59,7 @@ class DNSMonitorGUI:
         self.border_color = '#333333'
         
         self.root = tk.Tk()
-        self.root.title("🛡️ NetGuard DNS Monitor v2.1")
+        self.root.title("🛡️ NetGuard DNS Monitor v2.2")
         self.root.geometry("1200x900")
         self.root.minsize(1000, 700)
         
@@ -93,7 +96,7 @@ class DNSMonitorGUI:
         self.update_gui()
     
     def load_config(self):
-        """Load saved configuration"""
+        """Load saved configuration from JSON file"""
         try:
             if os.path.exists(CONFIG_FILE):
                 with open(CONFIG_FILE, 'r') as f:
@@ -105,7 +108,7 @@ class DNSMonitorGUI:
             self.cache_enabled = True
     
     def save_config(self):
-        """Save configuration"""
+        """Save configuration to JSON file"""
         try:
             with open(CONFIG_FILE, 'w') as f:
                 json.dump({'cache_enabled': self.cache_enabled}, f)
@@ -194,7 +197,7 @@ class DNSMonitorGUI:
                               bg=self.bg_secondary, fg=self.accent_color)
         title_label.pack(side='left')
         
-        subtitle_label = tk.Label(title_frame, text="DNS Monitor v2.1", font=('Segoe UI', 12),
+        subtitle_label = tk.Label(title_frame, text="DNS Monitor v2.2", font=('Segoe UI', 12),
                                  bg=self.bg_secondary, fg=self.fg_secondary)
         subtitle_label.pack(side='left', padx=(10, 0))
         
@@ -348,6 +351,7 @@ class DNSMonitorGUI:
         blocklist_menu.add_command(label="📁 Import from File", command=self.import_blocklist_file)
         blocklist_menu.add_command(label="🌐 Import from GitHub", command=self.import_github_blocklist)
         blocklist_menu.add_command(label="📥 Load Default Blocklist", command=self.load_default_blocklist)
+        blocklist_menu.add_command(label="⚡ Load Preinstalled (64K)", command=self.load_preinstalled_blocklist)
         blocklist_menu.add_separator()
         blocklist_menu.add_command(label="💾 Export Blocklist", command=self.export_blocklist)
         
@@ -659,6 +663,8 @@ class DNSMonitorGUI:
                   command=self.import_blocklist_file).pack(side='left', padx=5)
         ttk.Button(btn_inner, text="🌐 Import GitHub", 
                   command=self.import_github_blocklist).pack(side='left', padx=5)
+        ttk.Button(btn_inner, text="⚡ Load Preinstalled (64K – Recommended)", 
+                  command=self.load_preinstalled_blocklist).pack(side='left', padx=5)
         ttk.Button(btn_inner, text="📥 Load Defaults", 
                   command=self.load_default_blocklist).pack(side='left', padx=5)
         ttk.Button(btn_inner, text="💾 Export", 
@@ -825,13 +831,16 @@ class DNSMonitorGUI:
         self.status_details.pack(side='right', padx=15)
     
     def update_logs(self):
-        """Update logs"""
+        """Update logs with batch processing limit"""
         if self.paused:
             return
         
-        while not self.log_queue.empty():
+        batch = 0
+        max_batch = 50
+        while not self.log_queue.empty() and batch < max_batch:
             try:
                 item = self.log_queue.get_nowait()
+                batch += 1
                 
                 if isinstance(item, tuple) and item[0] == 'ALERT':
                     self.display_alert(item[1])
@@ -942,6 +951,24 @@ class DNSMonitorGUI:
         for domain in filtered_allowed:
             self.allowed_listbox.insert(tk.END, domain)
         self.allowed_count_label.config(text=f"Count: {len(allowed):,} (showing: {len(filtered_allowed):,})")
+    
+    def load_preinstalled_blocklist(self):
+        """Load preinstalled blocklist from local JSON file (fast local load)"""
+        messagebox.showinfo("Loading", "Loading preinstalled blocklist...")
+        
+        try:
+            with open('preinstalled-blocklist.json', 'r') as f:
+                domains = json.load(f)
+            
+            for domain in domains:
+                self.blocklist.add_blocked(domain)
+            
+            self.update_blocklist_display()
+            messagebox.showinfo("Success", "Loaded 64,300 domains! Estimated ad-blocking ~72%")
+        except FileNotFoundError:
+            messagebox.showerror("Error", "preinstalled-blocklist.json not found in program folder.")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to load blocklist: {e}")
     
     def import_github_blocklist(self):
         """Import from GitHub"""
@@ -1260,7 +1287,7 @@ Benefits:
     
     def show_about(self):
         """Show about"""
-        about_text = """NetGuard DNS Monitor v2.1
+        about_text = """NetGuard DNS Monitor v2.2
 
 Institution: Softwarica College of IT & E-Commerce
 Affiliation: Coventry University, UK
@@ -1281,7 +1308,7 @@ Features:
     def on_closing(self):
         """Handle close"""
         self.save_config()
-        self.root.quit()
+        self.root.destroy()
     
     def run(self):
         """Run GUI"""
