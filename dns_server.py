@@ -27,6 +27,8 @@ MAX_RETRIES = 2  # Retry failed queries
 BLOCKLIST_FILE = 'blocklist.json'
 ALLOWLIST_FILE = 'allowlist.json'
 
+# Threads safety
+log_lock = threading.lock()
 
 class DNSCache:
     """Thread-safe DNS cache with TTL support and statistics"""
@@ -642,9 +644,8 @@ def handle_dns_request(data, addr, sock, log_queue, all_logs, stats_tracker,
         log_queue.put(log_entry)
         
         # Thread-safe log storage
-        with threading.Lock():
+        with log_lock:                   
             all_logs.append(log_entry)
-            # Keep last 10000 entries
             if len(all_logs) > 10000:
                 all_logs.pop(0)
         
