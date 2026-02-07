@@ -713,4 +713,4 @@ def start_dns_server(log_queue, all_logs, stats_tracker, dns_cache, blocklist, a
         
     finally:
         sock.close()
-        print("✓ DNS server socket closed")
+        print("✓ -DNS server socket closed-")
