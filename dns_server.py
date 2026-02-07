@@ -27,6 +27,7 @@ MAX_RETRIES = 2  # Retry failed queries
 BLOCKLIST_FILE = 'blocklist.json'
 ALLOWLIST_FILE = 'allowlist.json'
 
+log_lock = threading.lock()
 
 class DNSCache:
     """Thread-safe DNS cache with TTL support and statistics"""
