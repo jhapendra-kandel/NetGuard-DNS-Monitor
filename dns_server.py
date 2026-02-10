@@ -28,7 +28,7 @@ BLOCKLIST_FILE = 'blocklist.json'
 ALLOWLIST_FILE = 'allowlist.json'
 
 # Threads safety
-log_lock = threading.lock()
+log_lock = threading.Lock()
 
 class DNSCache:
     """Thread-safe DNS cache with TTL support and statistics"""
