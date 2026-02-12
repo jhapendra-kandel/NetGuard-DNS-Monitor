@@ -11,6 +11,7 @@ from collections import Counter
 # datetime for handling time related stuff like duration calculation
 import datetime
 
+VERSION = "2.2.0"
 
 def compute_stats(all_logs):
     """Compute comprehensive statistics from DNS query logs

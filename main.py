@@ -24,7 +24,7 @@ from dns_server import (start_dns_server, DNSStats, DNSCache,
 from gui import create_gui
 
 # version info for our project, we update this when we make changes
-VERSION = "2.2.0"
+VERSION = "2.2.0" #Version as veriable here to use it to call in app
 AUTHOR = "Jhapendra Kandel"
 INSTITUTION = "Softwarica College (Coventry University)"
 
