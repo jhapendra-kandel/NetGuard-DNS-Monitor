@@ -2,7 +2,7 @@
 # basically everything starts from here, it initializes all components and starts the server
 # without this file nothing will run so dont delete or mess with it
 
-# Author: Jhapendra Kandel
+# Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 # Version: 2.2.0
@@ -25,7 +25,7 @@ from gui import create_gui
 
 # version info for our project, we update this when we make changes
 VERSION = "2.2.0" #Version as veriable here to use it to call in app
-AUTHOR = "Jhapendra Kandel"
+AUTHOR = "4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C"
 INSTITUTION = "Softwarica College (Coventry University)"
 
 def print_banner():
@@ -251,13 +251,15 @@ def main():
     print("   Configure your devices:")
     print("   1. Go to Network/WiFi settings")
     print(f"   2. Set Primary DNS to: {get_local_ip()}")
-    print("   3. Set Secondary DNS to: 8.8.8.8")
+    print("   3. Set Secondary DNS to: 8.8.8.8 - Not recomended") 
     print()
     print("   Using NetGuard:")
     print("   • Live Logs: See real-time DNS queries")
     print("   • Statistics: View network analytics")
     print("   • Blocklist: Block ads and trackers")
     print("   • Alerts: Monitor security threats")
+    print("   • WARNING: College or corporate networks typically use access-point and client isolation. \n"
+                "Running this tool in such environments may not work.")
     print()
     print("Starting GUI interface...")
     print()

@@ -2,7 +2,7 @@
 # it handles all the dns query stuff like processing, caching, blocking and detecting anomaly
 # basically this whole file is the heart of our project without this nothing works
 
-# Author: Jhapendra Kandel
+# Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 
