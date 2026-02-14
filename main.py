@@ -78,7 +78,7 @@ def print_ascii_logo():
             return
         except:
             pass
-    
+
     # fallback embedded ASCII art if file not found
     logo = """
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

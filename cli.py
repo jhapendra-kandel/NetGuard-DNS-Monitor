@@ -268,7 +268,7 @@ class DNSMonitorCLI:
         
         print(colored("╔══════════════════════════════════════════════════════════════════════════════╗", Colors.NETGUARD_PRIMARY))
         print(colored("║", Colors.NETGUARD_PRIMARY) + 
-              colored("                       ⚡ REAL-TIME DASHBOARD ⚡", Colors.BRIGHT_WHITE + Colors.BOLD).center(88) + 
+              colored("      REAL-TIME DASHBOARD ", Colors.BRIGHT_WHITE + Colors.BOLD).center(88) + 
               colored("║", Colors.NETGUARD_PRIMARY))
         print(colored("╠══════════════════════════════════════════════════════════════════════════════╣", Colors.NETGUARD_PRIMARY))
         
@@ -297,20 +297,20 @@ class DNSMonitorCLI:
         # MAIN MENU OPTIONS
         print(colored("┌─────────────────────────────────────────────────────────────────────────────┐", Colors.BRIGHT_CYAN))
         print(colored("│", Colors.BRIGHT_CYAN) + 
-              colored("                            🎯 MAIN MENU", Colors.BRIGHT_WHITE + Colors.BOLD).center(85) + 
+              colored("                              MAIN MENU", Colors.BRIGHT_WHITE + Colors.BOLD).center(85) + 
               colored("│", Colors.BRIGHT_CYAN))
         print(colored("└─────────────────────────────────────────────────────────────────────────────┘", Colors.BRIGHT_CYAN))
         print()
         
-        print_menu_item("1", "🔴 Live DNS Logs (Real-time Stream)", "●")
-        print_menu_item("2", "📊 Statistics & Analytics", "●")
-        print_menu_item("3", "🚫 Blocklist Management", "●")
-        print_menu_item("4", "⚠️  Security Alerts Monitor", "●")
-        print_menu_item("5", "⚡ Cache Control Panel", "●")
-        print_menu_item("6", "💾 Export & Backup", "●")
-        print_menu_item("7", "🔧 Advanced Settings", "●")
-        print_menu_item("8", "ℹ️  System Information", "●")
-        print_menu_item("0", "❌ Exit NetGuard CLI", "●")
+        print_menu_item("1", " Live DNS Logs (Real-time Stream)", "●")
+        print_menu_item("2", " Statistics & Analytics", "●")
+        print_menu_item("3", " Blocklist Management", "●")
+        print_menu_item("4", " Security Alerts Monitor", "●")
+        print_menu_item("5", " Cache Control Panel", "●")
+        print_menu_item("6", " Export & Backup", "●")
+        print_menu_item("7", " Advanced Settings", "●")
+        print_menu_item("8", " System Information", "●")
+        print_menu_item("0", " Exit NetGuard CLI", "●")
         
         print()
         print_separator("─", 80, Colors.DIM)
@@ -1027,10 +1027,10 @@ class DNSMonitorCLI:
         goodbye = """
   ╔══════════════════════════════════════════════════════════════╗
   ║                                                              ║
-  ║                    Thank You!                               ║
-  ║              🛡️  NetGuard DNS Monitor  🛡️                   ║
+  ║                    Thank You!                                ║
+  ║              🛡️  NetGuard DNS Monitor  🛡️                     ║
   ║                                                              ║
-  ║                  Stay Protected!                            ║
+  ║                  Stay Protected!                             ║
   ║                                                              ║
   ╚══════════════════════════════════════════════════════════════╝
 """
@@ -1044,6 +1044,7 @@ class DNSMonitorCLI:
         print(f"    Uptime: {colored(str(datetime.timedelta(seconds=int(stats['uptime']))), Colors.BRIGHT_CYAN)}")
         print()
         
+        print(colored("  Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C ", Colors.DIM))
         print(colored("  Softwarica College (Coventry University)", Colors.DIM))
         print()
         
