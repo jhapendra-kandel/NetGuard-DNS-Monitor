@@ -13,6 +13,7 @@ import threading
 import queue
 import sys
 import time
+import os
 # argparse is for handling command line arguments like --version and --help
 import argparse
 # platform is to check what os we running on and if we have admin rights
@@ -20,47 +21,171 @@ import platform
 # importing all the important classes from our dns_server file
 from dns_server import (start_dns_server, DNSStats, DNSCache, 
                         DNSBlocklist, AnomalyDetector)
-# this is our gui module that creates the tkinter window
-from gui import create_gui
 
 # version info for our project, we update this when we make changes
-VERSION = "2.2.0" #Version as veriable here to use it to call in app
+VERSION = "2.3.0"
 AUTHOR = "4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C"
 INSTITUTION = "Softwarica College (Coventry University)"
 
-def print_banner():
-    """Print startup banner with project information"""
-    # this is just the fancy banner that shows when you start the program
-    # it looks nice in the terminal with the box drawing characters
-    banner = f"""
-╔══════════════════════════════════════════════════════════════╗
-║                                                              ║
-║        🛡️  NetGuard DNS Monitor v{VERSION}  🛡️              ║
-║                                                              ║
-║         1st Year Python Programming Project                 ║
-║              {INSTITUTION:^44}              ║
-║                                                              ║
-╚══════════════════════════════════════════════════════════════╝
 
-Features Enabled:
-  ✓ Real-time DNS query monitoring
-  ✓ DNS caching for improved performance
-  ✓ Blocklist/Allowlist management
-  ✓ Anomaly detection & security alerts
-  ✓ Traffic analysis & statistics
-  ✓ CSV export capabilities
+# ANSI color codes for terminal output
+class Colors:
+    """ANSI color codes for terminal styling"""
+    RESET = '\033[0m'
+    BOLD = '\033[1m'
+    DIM = '\033[2m'
+    
+    # foreground colors
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
+    
+    # bright foreground colors
+    BRIGHT_RED = '\033[91m'
+    BRIGHT_GREEN = '\033[92m'
+    BRIGHT_YELLOW = '\033[93m'
+    BRIGHT_BLUE = '\033[94m'
+    BRIGHT_MAGENTA = '\033[95m'
+    BRIGHT_CYAN = '\033[96m'
+    BRIGHT_WHITE = '\033[97m'
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+def colored(text, color):
+    """Return colored text"""
+    return f"{color}{text}{Colors.RESET}"
+
+
+def clear_screen():
+    """Clear terminal screen"""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def print_ascii_logo():
+    """Print ASCII art logo from file or use embedded version"""
+    
+    # trying to load from ASCII_logo.txt file first
+    logo_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ASCII_logo.txt')
+    
+    if os.path.exists(logo_file):
+        try:
+            with open(logo_file, 'r') as f:
+                logo = f.read()
+            print(colored(logo, Colors.CYAN))
+            return
+        except:
+            pass
+
+    # fallback embedded ASCII art if file not found
+    logo = """
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@--%@@@@@@@@@@@@@@@--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%@@@@@@@@@@@@@@%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@-@@@@@@@@@@@@#@@@%*%%+----+=%%@@@@@@@@@@*--@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@-%@@@@@@@=@@@#%%%%+----%%----+%%%%%@@@@+@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@*@@@@@@@%%-%%#*-----%%%%%%%%-----*%%%%%%@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@*@@@@@*=----------%%%%%%%%%%%%%%%%----------=*@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@#@@@@------*@%%%%%%%%%%%%%%%%%%%%%%%%%%%*------@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@#@@@@---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%---@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@#@@@%---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%---%@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@-@@@%---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%---%%#=@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@--@%%---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%---%%--@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@+%---%%%%%%%%%%%%-----------=%%%%%=-%%%%%---%%@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@%---%%%%%%%%%----%--------%----%+--%%%%%---%@@@@@--@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@%%---%%%%%%%--=%%%---%%%----%%%----%%%%%%---%@@@@@@#@@@@@@@@@
+@@@@@@@@@@@@@@-@@@@@@%%---%%%%%--+%%%%---%%%#-----%%%%+--%%%%%---%@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@-=@@@@@%%---%%%%%--=%%%%---%%%%%%---%%%%---%%%%%---%@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@*@@@@%---%%%%%%%---%%%---%%%%---%%%---%%%%%%%---%@@@--+@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@%*--%%%%%%%%%----%--------%----%%%%%%%%%--#%@@@@=@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@--%%--#%%%%%%%%%%%%----------#%%%%%%%%%%%*--%%%@@@=@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@%%#--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%--%%@@@%@+@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@=%%---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%---%%@@@@---@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@+@@@%%---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%--=%@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@%+--*%%%%%%%%%%%%%%%%%%%%%%%%%%+--*%%@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@#@@@@@@@@%%%---%%%%%%%%%%%%%%%%%%%%%%%%---#%@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@#--++****++++**++---%%%%%%%%%%%%%%%%%%%%---%%%@%@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%+---%%%%%%%%%%%%%%%%---*@%%@@@@%@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#%%%----%%%%%%%%%%----%%%@@@@@@@@--@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@*@@@@%%%#----*%%+----#%%*#%@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@*-=@@@@@@@@%%%%------%%%%@@@--@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 """
-    print(banner)
+    print(colored(logo, Colors.CYAN))
+
+
+def print_app_info():
+    """Print application information after logo"""
+    print()
+    print(colored("╔══════════════════════════════════════════════════════════════════════════════╗", Colors.BRIGHT_CYAN))
+    print(colored("║                                                                              ║", Colors.BRIGHT_CYAN))
+    print(colored("║", Colors.BRIGHT_CYAN) + colored("            🛡️  NetGuard DNS Monitor v" + VERSION + "  🛡️                         ", Colors.BRIGHT_WHITE + Colors.BOLD) + colored("║", Colors.BRIGHT_CYAN))
+    print(colored("║                                                                              ║", Colors.BRIGHT_CYAN))
+    print(colored("║", Colors.BRIGHT_CYAN) + colored("              Real-time DNS Monitoring & Security Tool                       ", Colors.WHITE) + colored("║", Colors.BRIGHT_CYAN))
+    print(colored("║                                                                              ║", Colors.BRIGHT_CYAN))
+    print(colored("║", Colors.BRIGHT_CYAN) + colored("         1st Year Python Programming Project                                 ", Colors.DIM) + colored("║", Colors.BRIGHT_CYAN))
+    print(colored("║", Colors.BRIGHT_CYAN) + colored("         Softwarica College of IT & E-Commerce (Coventry University)        ", Colors.DIM) + colored("║", Colors.BRIGHT_CYAN))
+    print(colored("║                                                                              ║", Colors.BRIGHT_CYAN))
+    print(colored("╚══════════════════════════════════════════════════════════════════════════════╝", Colors.BRIGHT_CYAN))
+    print()
+
+
+def print_features():
+    """Print enabled features"""
+    print(colored("  Features Enabled:", Colors.BRIGHT_WHITE + Colors.BOLD))
+    print(colored("    ✓ Real-time DNS query monitoring", Colors.GREEN))
+    print(colored("    ✓ DNS caching for improved performance", Colors.GREEN))
+    print(colored("    ✓ Blocklist/Allowlist management", Colors.GREEN))
+    print(colored("    ✓ Anomaly detection & security alerts", Colors.GREEN))
+    print(colored("    ✓ Traffic analysis & statistics", Colors.GREEN))
+    print(colored("    ✓ CSV export capabilities", Colors.GREEN))
+    print()
+
+
+def get_interface_choice():
+    """Ask user to choose between CLI and GUI"""
+    print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", Colors.CYAN))
+    print()
+    print(colored("  Please select interface mode:", Colors.BRIGHT_WHITE + Colors.BOLD))
+    print()
+    print(colored("    [1]", Colors.BRIGHT_CYAN) + colored(" CLI", Colors.BRIGHT_WHITE) + colored(" - Command Line Interface (Terminal-based)", Colors.DIM))
+    print(colored("    [2]", Colors.BRIGHT_CYAN) + colored(" GUI", Colors.BRIGHT_WHITE) + colored(" - Graphical User Interface (Window-based)", Colors.DIM))
+    print()
+    print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", Colors.CYAN))
+    print()
+    
+    while True:
+        choice = input(colored("  Would you like to choose CLI or GUI? Press 1 or 2 for CLI and GUI resp:\n", Colors.BRIGHT_YELLOW) + 
+                      colored("  1.cli or 2.gui == ??? ---> REPLY:(1/2): ", Colors.BRIGHT_CYAN)).strip()
+        
+        if choice == '1':
+            print()
+            print(colored("  ✓ CLI mode selected!", Colors.GREEN))
+            print()
+            time.sleep(1)
+            return 'cli'
+        elif choice == '2':
+            print()
+            print(colored("  ✓ GUI mode selected!", Colors.GREEN))
+            print()
+            time.sleep(1)
+            return 'gui'
+        else:
+            print(colored("  ✗ Invalid choice! Please enter 1 or 2.", Colors.RED))
+            print()
+
 
 def check_admin_privileges():
     """Check if running with administrator/root privileges"""
-    # we need admin rights because port 53 is a privileged port
-    # without admin the server cant bind to port 53 and wont work
     system = platform.system()
     
-    # checking for windows admin rights using ctypes
     if system == "Windows":
         try:
             import ctypes
@@ -69,49 +194,40 @@ def check_admin_privileges():
         except:
             return False
     else:
-        # for linux and mac we check if user is root (uid 0)
-        import os
         return os.geteuid() == 0
+
 
 def print_admin_warning():
     """Print warning if not running with admin privileges"""
-    # this function shows instructions on how to run as admin
-    # because students always forget to run as administrator
     system = platform.system()
     
-    print("⚠️  WARNING: Not running with administrator privileges!")
+    print(colored("⚠️  WARNING: Not running with administrator privileges!", Colors.BRIGHT_YELLOW))
     print()
     
     if system == "Windows":
-        # windows users need to right click and run as admin
-        print("   Please run this program as Administrator:")
-        print("   1. Right-click on Command Prompt")
-        print("   2. Select 'Run as administrator'")
-        print("   3. Navigate to project folder")
-        print("   4. Run: python main.py")
+        print(colored("   Please run this program as Administrator:", Colors.WHITE))
+        print(colored("   1. Right-click on Command Prompt", Colors.DIM))
+        print(colored("   2. Select 'Run as administrator'", Colors.DIM))
+        print(colored("   3. Navigate to project folder", Colors.DIM))
+        print(colored("   4. Run: python main.py", Colors.DIM))
     else:
-        # linux and mac users need sudo
-        print("   Please run this program with sudo:")
-        print("   sudo python3 main.py")
+        print(colored("   Please run this program with sudo:", Colors.WHITE))
+        print(colored("   sudo python3 main.py", Colors.BRIGHT_CYAN))
     
     print()
-    print("   DNS server requires port 53 access (privileged port)")
+    print(colored("   DNS server requires port 53 access (privileged port)", Colors.DIM))
     print()
     
-    # giving user option to continue anyway incase they want to test other things
-    response = input("Continue anyway? (y/N): ").strip().lower()
+    response = input(colored("  Continue anyway? (y/N): ", Colors.YELLOW)).strip().lower()
     if response != 'y':
-        print("\nExiting...")
+        print(colored("\n  Exiting...", Colors.RED))
         sys.exit(0)
+
 
 def get_local_ip():
     """Get local IP address for user information"""
-    # we need to show user their local ip so they can configure their devices
-    # to use this computer as dns server
     import socket
     try:
-        # this trick connects to google dns to find out our own ip address
-        # it doesnt actually send any data just figures out what interface to use
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         local_ip = s.getsockname()[0]
@@ -120,17 +236,44 @@ def get_local_ip():
     except:
         return "Unable to determine"
 
+
+def print_system_info():
+    """Print system information"""
+    print(colored("  System Information:", Colors.BRIGHT_WHITE + Colors.BOLD))
+    print(colored(f"    Platform: {platform.system()} {platform.release()}", Colors.WHITE))
+    print(colored(f"    Python: {platform.python_version()}", Colors.WHITE))
+    print(colored(f"    Local IP: {get_local_ip()}", Colors.CYAN))
+    print()
+
+
+def print_setup_guide():
+    """Print setup guide for configuring devices"""
+    print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", Colors.CYAN))
+    print()
+    print(colored("  💡 QUICK SETUP GUIDE:", Colors.BRIGHT_WHITE + Colors.BOLD))
+    print()
+    print(colored(f"     Your Computer's IP: {get_local_ip()}", Colors.BRIGHT_CYAN))
+    print()
+    print(colored("     Configure your devices:", Colors.WHITE))
+    print(colored("     1. Go to Network/WiFi settings", Colors.DIM))
+    print(colored(f"     2. Set Primary DNS to: {get_local_ip()}", Colors.DIM))
+    print(colored("     3. Set Secondary DNS to: 8.8.8.8", Colors.DIM))
+    print()
+    print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", Colors.CYAN))
+    print()
+
+
 def parse_arguments():
     """Parse command-line arguments"""
-    # setting up command line arguments so user can do things like --version or --help
     parser = argparse.ArgumentParser(
         description='NetGuard DNS Monitor - Real-time DNS monitoring and security',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Examples:
-  python main.py                    # Start with GUI
+  sudo python3 main.py              # Start with interface selection
+  sudo python3 main.py --cli        # Start directly in CLI mode
+  sudo python3 main.py --gui        # Start directly in GUI mode
   python main.py --version          # Show version
-  python main.py --help             # Show this help
 
 Author: {AUTHOR}
 Institution: {INSTITUTION}
@@ -143,11 +286,16 @@ Institution: {INSTITUTION}
         version=f'NetGuard DNS Monitor v{VERSION}'
     )
     
-    # this is for future use, right now gui always starts
     parser.add_argument(
-        '--no-gui',
+        '--cli',
         action='store_true',
-        help='Run in console mode without GUI (future feature)'
+        help='Start directly in CLI mode (skip selection)'
+    )
+    
+    parser.add_argument(
+        '--gui',
+        action='store_true',
+        help='Start directly in GUI mode (skip selection)'
     )
     
     parser.add_argument(
@@ -158,154 +306,168 @@ Institution: {INSTITUTION}
     
     return parser.parse_args()
 
+
+def initialize_components():
+    """Initialize all DNS monitor components"""
+    print(colored("  Initializing DNS Monitor components...", Colors.WHITE))
+    
+    log_queue = queue.Queue()
+    all_logs = []
+    stats_tracker = DNSStats()
+    dns_cache = DNSCache()
+    blocklist = DNSBlocklist()
+    anomaly_detector = AnomalyDetector()
+    
+    print(colored("    ✓ Log queue created", Colors.GREEN))
+    print(colored("    ✓ Statistics tracker initialized", Colors.GREEN))
+    print(colored("    ✓ DNS cache ready", Colors.GREEN))
+    print(colored("    ✓ Blocklist manager ready", Colors.GREEN))
+    print(colored("    ✓ Anomaly detector active", Colors.GREEN))
+    print()
+    
+    return log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector
+
+
+def start_dns_server_thread(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector):
+    """Start DNS server on a separate thread"""
+    print(colored("  Starting DNS server...", Colors.WHITE))
+    
+    dns_thread = threading.Thread(
+        target=start_dns_server,
+        args=(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector),
+        daemon=True,
+        name="DNS-Server-Thread"
+    )
+    dns_thread.start()
+    
+    time.sleep(1)
+    
+    if not dns_thread.is_alive():
+        print(colored("\n  ✗ DNS server failed to start!", Colors.RED))
+        print(colored("    This usually means port 53 is already in use or permission denied.", Colors.DIM))
+        sys.exit(1)
+    
+    print(colored("    ✓ DNS server started successfully", Colors.GREEN))
+    print()
+    
+    return dns_thread
+
+
 def main():
     """Main entry point with enhanced error handling"""
-    # this is the main function where everything begins
-    # it sets up all components one by one and then starts the gui
     
-    # first parse any command line arguments user might have given
+    # parse command line arguments first
     args = parse_arguments()
     
-    # showing the nice banner in terminal
-    print_banner()
+    # clear screen and show ASCII logo
+    clear_screen()
+    print_ascii_logo()
+    print_app_info()
+    print_features()
     
-    # checking if user has admin rights, if not we warn them
+    # check admin privileges
     if not check_admin_privileges():
         print_admin_warning()
     
-    # showing some system info so we know whats going on
-    print("System Information:")
-    print(f"  Platform: {platform.system()} {platform.release()}")
-    print(f"  Python: {platform.python_version()}")
-    print(f"  Local IP: {get_local_ip()}")
-    print()
+    # print system info
+    print_system_info()
     
-    # now we initialize all the main components of our project
-    # each component is a separate class that handles different thing
-    try:
-        print("Initializing DNS Monitor components...")
-        
-        # this queue is how dns server thread sends log data to gui thread
-        # without this gui would freeze or crash trying to access data directly
-        log_queue = queue.Queue()
-        # this list stores all logs so we can use them for statistics and export
-        all_logs = []
-        # stats tracker keeps count of total queries, blocked, cached etc
-        stats_tracker = DNSStats()
-        # dns cache stores previously resolved domains so we dont have to ask upstream again
-        dns_cache = DNSCache()
-        # blocklist manages which domains are blocked and which are allowed
-        blocklist = DNSBlocklist()
-        # anomaly detector watches for suspicious patterns like ddos or malware domains
-        anomaly_detector = AnomalyDetector()
-        
-        print("  ✓ Log queue created")
-        print("  ✓ Statistics tracker initialized")
-        print("  ✓ DNS cache ready")
-        print("  ✓ Blocklist manager ready")
-        print("  ✓ Anomaly detector active")
+    # determine interface mode
+    if args.cli:
+        interface_mode = 'cli'
+        print(colored("  ✓ CLI mode selected (via --cli flag)", Colors.GREEN))
         print()
-        
+    elif args.gui:
+        interface_mode = 'gui'
+        print(colored("  ✓ GUI mode selected (via --gui flag)", Colors.GREEN))
+        print()
+    else:
+        # ask user to choose
+        interface_mode = get_interface_choice()
+    
+    # initialize all components
+    try:
+        log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector = initialize_components()
     except Exception as e:
-        # if any component fails to initialize we cant continue so we exit
-        print(f"\n❌ Failed to initialize components: {e}")
+        print(colored(f"\n  ✗ Failed to initialize components: {e}", Colors.RED))
         sys.exit(1)
     
-    # starting the dns server on a separate thread
-    # it has to be separate thread because gui runs on main thread
-    # and both need to run at same time without blocking each other
+    # start dns server thread
     try:
-        print("Starting DNS server...")
-        dns_thread = threading.Thread(
-            target=start_dns_server,
-            args=(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector),
-            daemon=True,  # daemon means it will stop when main program stops
-            name="DNS-Server-Thread"
-        )
-        dns_thread.start()
-        
-        # waiting a bit for server to initialize before checking if it started ok
+        dns_thread = start_dns_server_thread(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector)
+    except Exception as e:
+        print(colored(f"\n  ✗ Failed to start DNS server: {e}", Colors.RED))
+        sys.exit(1)
+    
+    # print setup guide
+    print_setup_guide()
+    
+    # launch the selected interface
+    if interface_mode == 'cli':
+        print(colored("  Starting CLI interface...", Colors.CYAN))
+        print()
         time.sleep(1)
         
-        # if thread died already that means server failed to start
-        if not dns_thread.is_alive():
-            print("\n❌ DNS server failed to start!")
-            print("   This usually means port 53 is already in use or permission denied.")
+        try:
+            from cli import run_cli
+            run_cli(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector)
+            
+        except ImportError as e:
+            print(colored(f"\n  ✗ Failed to import CLI module: {e}", Colors.RED))
+            print(colored("    Make sure cli.py exists in the same directory.", Colors.DIM))
             sys.exit(1)
-        
-        print("  ✓ DNS server started successfully")
+            
+        except KeyboardInterrupt:
+            print(colored("\n\n  ⚠️  Keyboard interrupt detected", Colors.YELLOW))
+            print(colored("  Shutting down gracefully...", Colors.WHITE))
+            
+        except Exception as e:
+            print(colored(f"\n  ✗ CLI error: {e}", Colors.RED))
+            if args.verbose:
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)
+    
+    else:  # gui mode
+        print(colored("  Starting GUI interface...", Colors.CYAN))
         print()
         
-    except Exception as e:
-        print(f"\n❌ Failed to start DNS server: {e}")
-        sys.exit(1)
+        try:
+            from gui import create_gui
+            create_gui(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector)
+            
+        except ImportError as e:
+            print(colored(f"\n  ✗ Failed to import GUI module: {e}", Colors.RED))
+            print(colored("\n  Please install required packages:", Colors.WHITE))
+            print(colored("    pip install -r requirements.txt", Colors.CYAN))
+            sys.exit(1)
+            
+        except KeyboardInterrupt:
+            print(colored("\n\n  ⚠️  Keyboard interrupt detected", Colors.YELLOW))
+            print(colored("  Shutting down gracefully...", Colors.WHITE))
+            
+        except Exception as e:
+            print(colored(f"\n  ✗ GUI error: {e}", Colors.RED))
+            if args.verbose:
+                import traceback
+                traceback.print_exc()
+            sys.exit(1)
     
-    # printing setup guide so user knows how to configure their devices
-    # this is important because many people dont know how to change dns settings
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    # goodbye message
     print()
-    print("💡 QUICK SETUP GUIDE:")
+    print(colored("═" * 70, Colors.CYAN))
+    print(colored("  ✓ DNS Monitor stopped successfully", Colors.GREEN))
     print()
-    print(f"   Your Computer's IP: {get_local_ip()}")
+    print(colored("  Thank you for using NetGuard DNS Monitor!", Colors.BRIGHT_CYAN))
+    print(colored(f"  Author: {AUTHOR}", Colors.DIM))
+    print(colored(f"  {INSTITUTION}", Colors.DIM))
+    print(colored("═" * 70, Colors.CYAN))
     print()
-    print("   Configure your devices:")
-    print("   1. Go to Network/WiFi settings")
-    print(f"   2. Set Primary DNS to: {get_local_ip()}")
-    print("   3. Set Secondary DNS to: 8.8.8.8 - Not recomended") 
-    print()
-    print("   Using NetGuard:")
-    print("   • Live Logs: See real-time DNS queries")
-    print("   • Statistics: View network analytics")
-    print("   • Blocklist: Block ads and trackers")
-    print("   • Alerts: Monitor security threats")
-    print("   • WARNING: College or corporate networks typically use access-point and client isolation. \n"
-                "Running this tool in such environments may not work.")
-    print()
-    print("Starting GUI interface...")
-    print()
-    print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-    print()
-    
-    # now starting the gui, this is the last thing because gui blocks the main thread
-    # meaning code after this line wont run until gui window is closed
-    try:
-        create_gui(log_queue, all_logs, stats_tracker, dns_cache, blocklist, anomaly_detector)
-        
-    except KeyboardInterrupt:
-        # user pressed ctrl+c to stop everything
-        print("\n\n⚠️  Keyboard interrupt detected")
-        print("Shutting down gracefully...")
-        
-    except ImportError as e:
-        # some module is missing, user needs to install dependencies
-        print(f"\n❌ Missing required module: {e}")
-        print("\nPlease install dependencies:")
-        print("   pip install -r requirements.txt")
-        sys.exit(1)
-        
-    except Exception as e:
-        # something unexpected went wrong
-        print(f"\n❌ Unexpected error: {e}")
-        if args.verbose:
-            import traceback
-            traceback.print_exc()
-        sys.exit(1)
-    
-    # this part runs after gui is closed, just showing goodbye message
-    print("\n" + "="*60)
-    print("✓ DNS Monitor stopped successfully")
-    print()
-    print("Thank you for using NetGuard DNS Monitor!")
-    print(f"Project by {AUTHOR}")
-    print(f"{INSTITUTION}")
-    print("="*60 + "\n")
 
-# this is the standard python way to check if this file is being run directly
-# not imported as a module, if run directly then call main function
+
 if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        # last resort error catching incase something goes very wrong
-        print(f"\n❌ Fatal error: {e}")
+        print(colored(f"\n  ✗ Fatal error: {e}", Colors.RED))
         sys.exit(1)
