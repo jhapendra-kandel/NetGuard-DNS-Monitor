@@ -23,7 +23,7 @@ from dns_server import (start_dns_server, DNSStats, DNSCache,
                         DNSBlocklist, AnomalyDetector)
 
 # version info for our project, we update this when we make changes
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 AUTHOR = "4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C"
 INSTITUTION = "Softwarica College (Coventry University)"
 
