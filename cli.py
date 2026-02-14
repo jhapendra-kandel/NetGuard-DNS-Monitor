@@ -953,9 +953,20 @@ class DNSMonitorCLI:
             uptime = str(datetime.timedelta(seconds=int(stats['uptime'])))
             
             print(colored("┌────────────────────────────────────────────────────────────┐", Colors.NETGUARD_INFO))
-            print(colored("│", Colors.NETGUARD_INFO) + f"  Uptime: {colored(uptime, Colors.BRIGHT_CYAN)}".ljust(73) + colored("│", Colors.NETGUARD_INFO))
-            print(colored("│", Colors.NETGUARD_INFO) + f"  QPS: {colored(f'{stats['queries_per_second']:.2f}', Colors.BRIGHT_CYAN)}".ljust(73) + colored("│", Colors.NETGUARD_INFO))
-            print(colored("│", Colors.NETGUARD_INFO) + f"  Avg: {colored(f'{stats['avg_time']:.1f}ms', Colors.BRIGHT_CYAN)}".ljust(73) + colored("│", Colors.NETGUARD_INFO))
+            print(colored("│", Colors.NETGUARD_INFO) +
+                  f" Uptime: {colored(uptime, Colors.BRIGHT_CYAN)}".ljust(73) +
+                  colored("│", Colors.NETGUARD_INFO))
+
+            qps_str = f"{stats['queries_per_second']:.2f}"
+            print(colored("│", Colors.NETGUARD_INFO) +
+                  f" QPS:    {colored(qps_str, Colors.BRIGHT_CYAN)}".ljust(73) +
+                  colored("│", Colors.NETGUARD_INFO))
+
+            avg_str = f"{stats['avg_time']:.1f}ms"
+            print(colored("│", Colors.NETGUARD_INFO) +
+                  f" Avg:    {colored(avg_str, Colors.BRIGHT_CYAN)}".ljust(73) +
+                  colored("│", Colors.NETGUARD_INFO))
+
             print(colored("└────────────────────────────────────────────────────────────┘", Colors.NETGUARD_INFO))
             print()
             

@@ -11,8 +11,8 @@ requests==2.31.0
 # tkinter is built-in, but on some Linux systems may need: python3-tk
 
 # Data visualization
-matplotlib==3.7.1
-numpy==1.24.3
+numpy>=1.26.4
+matplotlib>=3.8.4
 
 # Optional: Enhanced features
 # Uncomment below for additional functionality
