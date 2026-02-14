@@ -17,7 +17,7 @@
 | **Institution** | Softwarica College of IT & E-Commerce |
 | **Affiliation** | Coventry University, UK |
 | **Academic Year** | 2025-2026 |
-| **Author** | 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C |
+| **Author** | Jhapendra kandel |
 | **Repository** | [GitHub](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor) |
 | **License** | MIT |
 
@@ -485,7 +485,7 @@ NetGuard-DNS-Monitor/
 
 ## 📧 Contact Information
 
-**Project Author:** 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C  
+**Project Author:** Jhapendra kandel  
 **Email:** jhapendrakandel@example.com  
 **GitHub:** [@jhapendra-kandel](https://github.com/jhapendra-kandel)  
 **Project Repository:** [NetGuard-DNS-Monitor](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor)

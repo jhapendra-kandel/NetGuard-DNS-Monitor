@@ -2,7 +2,7 @@
 # Enhanced command line interface with AMAZING real-time features
 # This is THE BEST CLI experience you'll ever have for DNS monitoring!
 
-# Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
+# Author: Jhapendra kandel
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 
@@ -1055,7 +1055,7 @@ class DNSMonitorCLI:
         print(f"    Uptime: {colored(str(datetime.timedelta(seconds=int(stats['uptime']))), Colors.BRIGHT_CYAN)}")
         print()
         
-        print(colored("  Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C ", Colors.DIM))
+        print(colored("  Author: Jhapendra kandel ", Colors.DIM))
         print(colored("  Softwarica College (Coventry University)", Colors.DIM))
         print()
         

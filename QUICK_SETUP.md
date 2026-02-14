@@ -1,47 +1,78 @@
-# ⚡ Quick Setup Guide - NetGuard DNS Monitor
+# ⚡ Quick Setup - Get Running in 5 Minutes!
 
-Get up and running in 5 minutes!
+Hey! So you want to try NetGuard but don't want to read a whole manual? Cool, I got you. Follow these steps and you'll be monitoring your network in literally 5 minutes.
 
 ---
 
-## 🚀 Prerequisites
+## ✅ What You Need
 
-- Python 3.8+ installed
-- Administrator/sudo access
+- Computer with Python 3.8+ installed -- may not work properly for python verison 3.14 ++ in windows 
+- Admin/sudo access (you'll need it!)
 - Internet connection
+- That's it!
 
 ---
 
-## 📥 Installation (3 Steps)
+## 🚀 Let's Go!
 
-### 1. Clone Repository
+### Step 1: Clone This Thing
+
+Open your terminal/command prompt and paste this:
 
 ```bash
 git clone https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor.git
 cd NetGuard-DNS-Monitor
 ```
 
-### 2. Install Dependencies
+Don't have Git? No problem! Just download the ZIP from GitHub and extract it.
+
+---
+
+### Step 2: Install Dependencies
+
+Just one command:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Run Application
+This installs all the libraries needed. Takes like 30 seconds.
 
-**Windows (as Administrator):**
+---
+
+### Step 3: Run It!
+
+**On Windows:**
+1. Right-click Command Prompt → "Run as Administrator"
+2. Navigate to your project folder
+3. Run:
 ```cmd
 python main.py
 ```
 
-**Linux/macOS:**
+**On Mac/Linux:**
 ```bash
 sudo python3 main.py
 ```
 
+You should see this cool banner:
+```
+╔══════════════════════════════════════╗
+║   🛡️  NetGuard DNS Monitor  🛡️      ║
+╚══════════════════════════════════════╝
+
+✓ DNS Server running on port 53
+✓ Cache enabled
+✓ Blocklist enabled
+```
+
+If you see that, you're good to go! ✨
+
 ---
 
-## 🔧 Configure Device DNS
+## 📱 Step 4: Configure Your Phone/Laptop
+
+Now the fun part - actually using it!
 
 ### Find Your Computer's IP
 
@@ -49,68 +80,121 @@ sudo python3 main.py
 ```cmd
 ipconfig
 ```
+Look for "IPv4 Address" (something like 192.168.1.100)
 
-**Linux/macOS:**
+**Mac/Linux:**
 ```bash
 hostname -I
-# or
-ip addr show
+```
+First address shown is your IP
+
+### Set Up Your Device
+
+I'll show you for a phone (laptop is similar):
+
+1. **Go to WiFi Settings**
+2. **Tap your WiFi network**
+3. **Find DNS settings** (might be under "Advanced")
+4. **Change to Manual/Static**
+5. **Set Primary DNS:** Your computer's IP (e.g., 192.168.1.100)
+6. **Set Secondary DNS:** 8.8.8.8 -- NOT RECOMENDED (FOR BACKUPS ONLY)
+7. **Save**
+
+---
+
+## 🎉 Test It!
+
+1. On your phone, open any website
+2. Look at NetGuard on your computer
+3. You should see DNS queries appearing!
+
+**Color meanings:**
+- 🟢 Green = Successful query
+- 🔵 Blue = From cache (fast!)
+- 🔴 Red = Blocked
+- ⚫ Grey = Failed
+
+---
+
+## 🚫 Want to Block Ads?
+
+Easy!
+
+1. Click "Blocklist Manager" tab
+2. Click "Load Default Ads/Trackers"
+3. Boom! 100+ ad domains blocked
+
+Now browse and watch ads get stopped before they even load 😎
+
+---
+
+## ⚠️ Troubleshooting
+
+### "Permission Denied" Error
+- **Windows:** Run as Administrator
+- **Mac/Linux:** Use `sudo`
+
+### "Port 53 Already in Use"
+Someone else is using that port. Usually it's:
+- Another DNS service
+- Docker
+- System DNS service
+
+**Fix:** Stop that service first
+
+### "ModuleNotFoundError"
+You forgot Step 2! Run:
+```bash
+pip install -r requirements.txt
 ```
 
-### Set DNS on Client Device
-
-1. Go to Network Settings
-2. Set **Primary DNS** to your computer's IP (e.g., 192.168.1.100)
-3. Set **Secondary DNS** to 8.8.8.8
-4. Save and reconnect
-
----
-
-## ✅ Verify It's Working
-
-1. Browse any website on your configured device
-2. Check NetGuard **Live Logs** tab
-3. You should see DNS queries appearing in real-time!
+### Not Seeing Any Queries?
+Check:
+- Did you set DNS on your device correctly?
+- Is NetGuard actually running?
+- Did your computer's IP change?
 
 ---
 
-## 🎯 Next Steps
+## 📚 Want More Details?
 
-1. **Block Ads:** Go to Blocklist tab → Click "Load Default Ads/Trackers"
-2. **Monitor Stats:** Check Statistics tab for network insights
-3. **Review Alerts:** Watch Alerts tab for security warnings
-
----
-
-## 📚 Full Documentation
-
-- [README.md](README.md) - Complete project overview
-- [INSTALLATION.md](INSTALLATION.md) - Detailed installation guide
-- [USAGE.md](USAGE.md) - User manual
-- [CONTRIBUTING.md](CONTRIBUTING.md) - How to contribute
+Check these out:
+- [Full Installation Guide](INSTALLATION.md) - Detailed setup for each OS
+- [Usage Guide](USAGE.md) - How to use every feature
+- [YouTube Tutorial](#) - Video walkthrough (way easier!)
 
 ---
 
-## 🆘 Having Issues?
+## 💡 Quick Tips
 
-**Port 53 Error:**
-- Run as Administrator (Windows) or sudo (Linux/macOS)
+1. **Load Blocklist:** Block ads right away
+2. **Check Statistics:** After a few hours of use
+3. **Export Logs:** Save interesting traffic patterns
+4. **Pause Logging:** When doing sensitive stuff
+5. **Cache On:** Keep it on for faster internet
 
-**No Queries Showing:**
-- Check device DNS settings
-- Verify firewall allows UDP port 53
-- Restart application
+---
 
-**Need More Help:**
-- [Troubleshooting Guide](INSTALLATION.md#troubleshooting)
-- [GitHub Issues](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor/issues)
+## 🎯 What's Next?
+
+Now that it's running:
+
+1. **Browse around** - See what gets logged
+2. **Block some ads** - Add domains to blocklist
+3. **Check stats** - See your network patterns
+4. **Set alerts** - Get notified of weird stuff
+5. **Explore features** - Try everything!
 
 ---
 
 <div align="center">
 
-**That's it! You're all set!** 🎉
+**That's it! You're now monitoring your network!** 🎉
 
-Happy Monitoring! 🛡️
+If you get stuck, check the full docs or open an issue on GitHub.
+
+**Happy monitoring!** 🛡️
+
+[Back to Main README](README.md) | [Detailed Installation](INSTALLATION.md)
 
 </div>

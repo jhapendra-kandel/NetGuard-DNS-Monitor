@@ -746,7 +746,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ```
 MIT License
 
-Copyright (c) 2026 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
+Copyright (c) 2026 Jhapendra kandel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files...
@@ -776,7 +776,7 @@ of this software and associated documentation files...
 
 ## 📧 Contact & Support
 
-**Project Maintainer:** 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C  
+**Project Maintainer:** Jhapendra kandel  
 **Email:** jhapendrakandel@example.com  
 **GitHub:** [@jhapendra-kandel](https://github.com/jhapendra-kandel)
 

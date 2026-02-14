@@ -2,7 +2,7 @@
 # basically everything starts from here, it initializes all components and starts the server
 # without this file nothing will run so dont delete or mess with it
 
-# Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
+# Author: Jhapendra kandel
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 # Version: 2.2.0
@@ -24,7 +24,7 @@ from dns_server import (start_dns_server, DNSStats, DNSCache,
 
 # version info for our project, we update this when we make changes
 VERSION = "2.2.0"
-AUTHOR = "4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C"
+AUTHOR = "Jhapendra kandel"
 INSTITUTION = "Softwarica College (Coventry University)"
 
 

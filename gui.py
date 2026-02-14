@@ -3,7 +3,7 @@
 # without this file user wont see anything just terminal output which is boring
 # so this file is very important for the visual part of our project
 
-# Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
+# Author: Jhapendra kandel
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 
@@ -1526,7 +1526,7 @@ Benefits:
 
 Institution: Softwarica College of IT & E-Commerce
 Affiliation: Coventry University, UK
-Author: 4A 68 61 70 65 6E 64 72 61 20 6B 61 6E 64 65 6C
+Author: Jhapendra kandel
 
 Features:
 • Real-time DNS monitoring
