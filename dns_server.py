@@ -6,7 +6,7 @@
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 
-VERSION = "2.3.0"
+VERSION = "2.2.0"
 
 # importing all the necessary modules we need for dns server to run
 import socket
