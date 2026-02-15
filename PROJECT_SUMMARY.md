@@ -9,7 +9,7 @@
 | Field | Details |
 |-------|---------|
 | **Project Name** | NetGuard DNS Monitor |
-| **Version** | 2.0.0 |
+| **Version** | 2.3.0 |
 | **Category** | Network Programming & Security |
 | **Primary Language** | Python 3.8+ |
 | **Project Type** | 1st Year Python Programming Project |

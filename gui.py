@@ -7,7 +7,7 @@
 # Project: 1st Year Python Programming
 # Institution: Softwarica College of IT & E-Commerce (Coventry University)
 
-VERSION = "2.2.0"
+VERSION = "2.3.0"
 
 # tkinter is the gui library that comes with python no need to install separately
 import tkinter as tk
