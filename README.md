@@ -3,56 +3,69 @@
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Active-success.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey)]()
 
 > **Real-time DNS Monitoring & Network Security System**  
-> A comprehensive DNS proxy server with advanced threat detection, caching, and analytics capabilities.
+> A comprehensive DNS proxy server with advanced threat detection, intelligent caching, and network analytics.
 
-**1st Year Python Programming Project** | Introduction to Programming Module  
-**Softwarica College of IT & E-Commerce** | In collaboration with Coventry University
+**Author:** Jhapendra Kandel  
+**Email:** jhapendrakandel10@gmail.com  
+**Institution:** Softwarica College of IT & E-Commerce (Coventry University)  
+**Project:** 1st Year Python Programming - Introduction to Programming Module  
+**Inspired by:** [Pi-hole](https://pi-hole.net/) - Network-wide Ad Blocking
+
+---
+
+## 📺 Watch It In Action
+
+[![NetGuard DNS Monitor Tutorial](https://img.youtube.com/vi/--Video-is-currnetly-in-progress--)](https://www.youtube.com/watch?v=Ill upload when ready)
+
+*👆 Click to watch the complete video tutorial on YouTube*
+
+> Full walkthrough from installation to advanced features. Everything you need to know in one video!
 
 ---
 
 ## 📋 Table of Contents
 
-- [Overview](#-overview)
+- [What Is This?](#-what-is-this)
 - [Key Features](#-key-features)
-- [Architecture](#-architecture)
 - [Screenshots](#-screenshots)
-- [Installation](#-installation)
 - [Quick Start](#-quick-start)
+- [Installation](#-installation)
 - [Usage Guide](#-usage-guide)
-- [Configuration](#-configuration)
-- [Project Structure](#-project-structure)
+- [Blocklist Setup](#-blocklist-setup--important)
+- [Architecture](#-architecture)
 - [Technical Details](#-technical-details)
-- [Security Features](#-security-features)
-- [Performance Optimization](#-performance-optimization)
 - [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
+- [Project Information](#-project-information)
 - [License](#-license)
-- [Acknowledgments](#-acknowledgments)
 
 ---
 
-## 🌟 Overview
+## 🤔 What Is This?
 
-NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring system designed for real-time threat detection, performance optimization, and comprehensive network analytics. Built as a 1st Year Python Programming Project for the Introduction to Programming module at Softwarica College of IT & E-Commerce (affiliated with Coventry University, UK), it demonstrates practical implementation of network security concepts, multithreading, caching algorithms, and GUI development.
+Hey! So I built this DNS monitoring tool for my 1st year programming project. Basically, every time you visit a website, your device asks a DNS server "what's the address of google.com?" - and this tool sits in the middle, watching everything.
 
-### 🎯 Project Objectives
+Think of it like a **security camera for your internet**. You can:
+- 👀 See every website your devices visit in real-time
+- 🚫 Block ads and trackers across ALL devices on your network
+- ⚠️ Detect suspicious activity (malware, phishing, weird patterns)
+- 📊 Analyze your network behavior with cool charts
+- ⚡ Speed up your internet with smart caching
 
-1. **Real-time Network Monitoring** - Capture and analyze all DNS queries in your network
-2. **Threat Detection** - Identify suspicious patterns and potential security threats
-3. **Performance Optimization** - Implement intelligent caching to reduce latency
-4. **User Privacy** - Block tracking and advertising domains
-5. **Educational Value** - Demonstrate Python programming and networking concepts
+**Why I built this:**
+- I wanted to see what my devices were REALLY doing online (spoiler: tons of tracking!)
+- Block those annoying ads without browser extensions
+- Learn network programming for my college project
+- Actually understand how DNS works, not just read about it
 
-### 🏆 What Makes This Project Unique
-
-- ✅ **Thread-safe Architecture** - Handles concurrent DNS requests efficiently
-- ✅ **Smart DNS Caching** - TTL-based caching with automatic expiration
-- ✅ **Anomaly Detection** - Machine learning-inspired pattern recognition
-- ✅ **Visual Analytics** - Real-time charts and statistics
-- ✅ **Cross-platform** - Works on Windows, Linux, and macOS
-- ✅ **Production-ready** - Proper error handling and logging
+**What makes it special:**
+- Works on all devices simultaneously (phones, laptops, smart TVs!)
+- No per-device configuration needed
+- Real-time monitoring and analytics
+- Production-ready with proper error handling
+- Cross-platform (Windows, Mac, Linux)
 
 ---
 
@@ -62,50 +75,282 @@ NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring syst
 
 | Feature | Description | Status |
 |---------|-------------|--------|
-| 🌐 **DNS Proxy** | Full-featured DNS forwarding server | ✅ |
-| ⚡ **Smart Caching** | TTL-based response caching | ✅ |
-| 🚫 **Domain Blocking** | Blocklist/Allowlist management | ✅ |
-| 🔍 **Anomaly Detection** | Pattern-based threat detection | ✅ |
-| 📊 **Real-time Analytics** | Live statistics and visualizations | ✅ |
-| 💾 **Data Export** | CSV export for external analysis | ✅ |
+| 🌐 **DNS Proxy Server** | Full-featured DNS forwarding on port 53 | ✅ Active |
+| ⚡ **Smart Caching** | TTL-based intelligent response caching | ✅ Active |
+| 🚫 **Ad/Tracker Blocking** | Block 64,000+ domains with one click | ✅ Active |
+| 🔍 **Anomaly Detection** | AI-inspired pattern recognition | ✅ Active |
+| 📊 **Real-time Analytics** | Live stats with visual charts | ✅ Active |
+| 💾 **Data Export** | Export logs to CSV for analysis | ✅ Active |
+| ⚠️ **Security Alerts** | Threat detection with severity levels | ✅ Active |
 
-### Advanced Features
+### What You Get
 
 #### 1. **Intelligent DNS Caching**
-```python
-✓ TTL-based expiration
-✓ Thread-safe operations
-✓ Cache hit/miss tracking
-✓ Configurable cache size
-✓ Performance metrics
+- Speeds up your internet by remembering DNS answers
+- Reduces bandwidth usage by 40-60%
+- Automatic TTL-based expiration
+- Cache hit rates of 60-70% in normal use
+- Toggle on/off with one click
+
+#### 2. **Advanced Threat Detection**
+- **Excessive Queries:** Detects DDoS or malware (>200 queries/min)
+- **Suspicious Domains:** Flags malware/phishing keywords
+- **DGA Detection:** Catches algorithmically generated domains
+- **Real-time Alerts:** Severity classification (HIGH/MEDIUM/LOW)
+- **Alert History:** Review past threats
+
+#### 3. **Comprehensive Blocklist Management**
+- **64,292 pre-installed domains** ready to use!
+- Default list blocks common ads and trackers
+- Wildcard subdomain blocking
+- Allowlist override for false positives
+- Import custom lists (but see warning below!)
+
+#### 4. **Network Analytics Dashboard**
+- Query type distribution (A, AAAA, CNAME, MX, TXT)
+- Top 10 most active devices
+- Top 10 most requested domains
+- Cache performance metrics
+- Network behavior insights
+- Visual charts and graphs
+
+---
+
+## 🖼️ Screenshots
+
+### Main Dashboard - Live Logs
+![Real-time DNS query monitoring](screenshots/live-logs.png)
+*Monitor every DNS query with color-coded status indicators*
+
+### Statistics & Analytics
+![Network insights and charts](screenshots/statistics.png)
+*Comprehensive analytics with pie charts and bar graphs*
+
+### Blocklist Manager
+![Domain blocking interface](screenshots/blocklist.png)
+*Easily manage blocked and allowed domains*
+
+### Security Alerts
+![Threat detection monitor](screenshots/alerts.png)
+*Real-time security alerts with severity classification*
+
+---
+
+## ⚡ Quick Start (5 Minutes!)
+
+### Prerequisites
+- Python 3.8 or higher installed
+- Administrator/sudo access
+- Active network connection
+
+### Step 1: Clone Repository
+```bash
+git clone https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor.git
+cd NetGuard-DNS-Monitor
 ```
 
-#### 2. **Anomaly Detection System**
-```python
-✓ Query frequency analysis
-✓ Suspicious domain detection
-✓ DGA (Domain Generation Algorithm) detection
-✓ Real-time alerting
-✓ Alert severity classification
+### Step 2: Install Dependencies
+```bash
+pip install -r requirements.txt
 ```
 
-#### 3. **Blocklist Management**
-```python
-✓ Domain-based blocking
-✓ Wildcard support
-✓ Allowlist override
-✓ Default ad/tracker lists
-✓ Custom blocklist import
+### Step 3: Run Application
+
+**Windows (as Administrator):**
+```cmd
+python main.py
 ```
 
-#### 4. **Comprehensive Analytics**
-```python
-✓ Query type distribution
-✓ Top active devices
-✓ Top requested domains
-✓ Security threat summary
-✓ Performance insights
+**Linux/macOS:**
+```bash
+sudo python3 main.py
 ```
+
+You should see this:
+```
+╔══════════════════════════════════════╗
+║   🛡️  NetGuard DNS Monitor v2.0     ║
+╚══════════════════════════════════════╝
+
+✓ DNS Server running on port 53
+✓ Cache enabled
+✓ Blocklist enabled (64,292 domains ready!)
+✓ Anomaly detection active
+```
+
+### Step 4: Configure Your Devices
+
+**Find your computer's IP:**
+- Windows: `ipconfig` (look for IPv4 Address)
+- Mac/Linux: `hostname -I` or `ip addr`
+
+**Set DNS on your phone/laptop:**
+1. Go to WiFi Settings
+2. Set **Primary DNS** to your computer's IP (e.g., 192.168.1.100)
+3. Set **Secondary DNS** to `8.8.8.8`
+4. Save and reconnect
+
+**Test it:**
+- Browse any website on your device
+- Check NetGuard's "Live Logs" tab
+- You should see DNS queries appearing!
+
+> 📖 **Detailed guide:** See [QUICK_SETUP.md](QUICK_SETUP.md) for step-by-step instructions
+
+---
+
+## 📦 Installation
+
+### Automated Setup (Recommended)
+
+**Windows:**
+```bash
+setup.bat
+```
+
+**Linux/macOS:**
+```bash
+chmod +x setup.sh
+./setup.sh
+```
+
+### Manual Installation
+
+#### Step 1: Create Virtual Environment
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/macOS
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### Step 2: Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+#### Step 3: Verify Installation
+```bash
+python main.py --help
+```
+
+> 📖 **Full guide:** See [INSTALLATION.md](INSTALLATION.md) for OS-specific detailed instructions
+
+---
+
+## 📚 Usage Guide
+
+### 1. Live Logs Tab
+
+**What it shows:**
+- Every DNS query from your network in real-time
+- Color-coded status (Green=Success, Red=Blocked, Blue=Cached)
+- Source IP, domain name, query type, response time
+
+**Controls:**
+- **Filter by domain/IP:** Search for specific queries
+- **Filter by type:** Show only A, AAAA, CNAME, etc.
+- **Pause/Resume:** Stop live updates
+- **Clear Logs:** Remove all entries
+
+### 2. Statistics & Analytics
+
+**Metrics displayed:**
+- Total queries, success/failure rates
+- Blocked queries percentage
+- Cache hit rate and performance
+- Network insights and recommendations
+
+**Visual charts:**
+- Query type distribution (pie chart)
+- Top 10 active devices (bar chart)
+- Top 10 requested domains (bar chart)
+
+**Auto-refresh:** Stats update automatically when tab is active
+
+### 3. Blocklist Manager
+
+**Adding domains manually:**
+1. Click "➕ Add Blocked Domain"
+2. Enter domain (e.g., `ads.example.com`)
+3. Click OK
+
+**Using the default list:**
+1. Click "🔄 Load Default Ads/Trackers"
+2. 100+ common ad/tracker domains loaded instantly
+
+**Wildcard blocking:**
+- Block `doubleclick.net`
+- Also blocks: `ads.doubleclick.net`, `tracking.doubleclick.net`, etc.
+
+**Allowlist:**
+- Add domains to bypass blocklist
+- Useful for accidentally blocked sites
+
+### 4. Security Alerts
+
+**Alert types:**
+- **HIGH:** Excessive queries, DGA detection
+- **MEDIUM:** Suspicious domain keywords
+- **LOW:** Minor anomalies
+
+**Alert actions:**
+- View details and timestamps
+- Export to log file
+- Clear alert history
+
+> 📖 **Detailed manual:** See [USAGE.md](USAGE.md) for complete feature documentation
+
+---
+
+## 🚫 Blocklist Setup ⚡ IMPORTANT!
+
+### Method 1: Pre-installed Blocklist (RECOMMENDED ✅)
+
+**We've included a ready-to-use blocklist with 64,292 domains!**
+
+**How to use it:**
+1. Locate the file: `preinstalled-blocklist.json`
+2. Open it and copy all the content
+3. Open `blocklist.json` (create it if it doesn't exist)
+4. Paste the content into `blocklist.json`
+5. Save and restart NetGuard
+
+**Why this method?**
+- ✅ **Fast loading** - No download needed
+- ✅ **Stable** - Won't crash or freeze the app
+- ✅ **64,292 domains** - Comprehensive blocking
+- ✅ **Pre-tested** - Verified to work properly
+
+### Method 2: Default List (Built-in)
+
+1. Open NetGuard
+2. Go to "Blocklist Manager" tab
+3. Click "🔄 Load Default Ads/Trackers"
+4. Adds 100+ common ad/tracker domains instantly
+
+### ⚠️ WARNING - GitHub/URL Imports
+
+**DO NOT use the "Import from URL/GitHub" feature for large lists!**
+
+**Why?**
+- ❌ **App may crash** during large imports
+- ❌ **UI freezes** while processing 100,000+ domains
+- ❌ **Memory issues** on some systems
+
+**If you MUST import a custom list:**
+1. Download the list manually
+2. Copy the domains
+3. Paste into `blocklist.json` file
+4. Restart the app
+
+**Expected ad blocking rate:**
+- Default list: ~60%
+- Pre-installed list: ~72%+
+- Custom lists: varies
 
 ---
 
@@ -114,381 +359,67 @@ NetGuard DNS Monitor is an advanced DNS proxy server and network monitoring syst
 ### System Design
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Client Devices                          │
-│            (Phones, Computers, IoT Devices)                 │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ DNS Queries (Port 53)
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│                  NetGuard DNS Monitor                       │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │              GUI Interface (Tkinter)                 │   │
-│  │  - Live Logs  - Statistics  - Blocklists  - Alerts  │   │
-│  └──────────────────────────────────────────────────────┘   │
-│  ┌──────────────────────────────────────────────────────┐   │
-│  │            Core DNS Server (dns_server.py)           │   │
-│  │  ┌────────────┐  ┌────────────┐  ┌────────────┐     │   │
-│  │  │   Cache    │  │ Blocklist  │  │  Anomaly   │     │   │
-│  │  │  Manager   │  │  Manager   │  │  Detector  │     │   │
-│  │  └────────────┘  └────────────┘  └────────────┘     │   │
-│  └──────────────────────────────────────────────────────┘   │
-└───────────────────────┬─────────────────────────────────────┘
-                        │ Forwarded Queries
-                        ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Upstream DNS (Google: 8.8.8.8)                 │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────┐
+│              Client Devices (Your Network)              │
+│        Phones, Laptops, Smart TVs, IoT Devices          │
+└─────────────────────┬───────────────────────────────────┘
+                      │ DNS Queries (Port 53)
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│              NetGuard DNS Monitor (This App)            │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │         GUI Interface (Tkinter)                   │  │
+│  │  [Live Logs] [Statistics] [Blocklist] [Alerts]    │  │
+│  └───────────────────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────────────────┐  │
+│  │         Core DNS Server (dns_server.py)           │  │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐           │  │
+│  │  │  Cache   │ │Blocklist │ │ Anomaly  │           │  │
+│  │  │  Engine  │ │  Engine  │ │ Detector │           │  │
+│  │  └──────────┘ └──────────┘ └──────────┘           │  │
+│  └───────────────────────────────────────────────────┘  │
+└─────────────────────┬───────────────────────────────────┘
+                      │ Forwarded Queries
+                      ▼
+┌─────────────────────────────────────────────────────────┐
+│         Upstream DNS (Google: 8.8.8.8)                  │
+└─────────────────────────────────────────────────────────┘
 ```
+
+### How It Works
+
+1. **Device sends DNS query** → Your phone asks "what's facebook.com?"
+2. **NetGuard intercepts** → Catches the query before it leaves your network
+3. **Security checks:**
+   - Is it in the blocklist? → Block it!
+   - Is it in the cache? → Return cached answer (fast!)
+   - Is it suspicious? → Generate alert!
+4. **Forward to upstream** → If not blocked/cached, ask Google DNS
+5. **Cache the response** → Save for future use
+6. **Return to device** → Your phone gets the answer
+7. **Log everything** → You see it in Live Logs tab
 
 ### Component Architecture
 
 ```python
-main.py
-├── DNS Server Thread (daemon)
+main.py (Entry Point)
+├── DNS Server Thread (background daemon)
 │   ├── Request Handler (multi-threaded)
-│   │   ├── Cache Lookup
-│   │   ├── Blocklist Check
-│   │   ├── Anomaly Detection
-│   │   └── Upstream Forwarding
-│   └── Log Queue Management
+│   │   ├── 1. Check Cache (DNSCache)
+│   │   ├── 2. Check Blocklist (DNSBlocklist)
+│   │   ├── 3. Anomaly Detection (AnomalyDetector)
+│   │   ├── 4. Forward to Upstream (8.8.8.8)
+│   │   └── 5. Cache Response
+│   └── Log Queue (thread-safe communication)
 │
-└── GUI Thread (main)
-    ├── Live Logs Tab
-    ├── Statistics Tab
-    ├── Blocklist Manager
-    └── Alerts Monitor
+└── GUI Thread (main interface)
+    ├── Live Logs Tab (real-time display)
+    ├── Statistics Tab (charts & analytics)
+    ├── Blocklist Manager (domain management)
+    └── Alerts Monitor (security warnings)
 ```
 
----
-
-## 📸 Screenshots
-
-### Main Interface
-*Live DNS query monitoring with real-time updates*
-
-### Statistics Dashboard
-*Comprehensive analytics with visual charts*
-
-### Blocklist Manager
-*Easy domain blocking and allowlist management*
-
-### Alerts Monitor
-*Real-time security threat detection*
-
----
-
-## 💻 Installation
-
-### Prerequisites
-
-- **Python 3.8 or higher**
-- **Administrator/Root privileges** (required for binding to port 53)
-- **Network access**
-
-### Step 1: Clone the Repository
-
-```bash
-git clone https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor.git
-cd NetGuard-DNS-Monitor
-```
-
-### Step 2: Create Virtual Environment (Recommended)
-
-**Why Virtual Environment?**
-- Isolates project dependencies
-- Prevents conflicts with system packages
-- Easy to manage and reproduce
-
-**Windows:**
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-venv\Scripts\activate
-
-# You should see (venv) in your prompt
-```
-
-**Linux/macOS:**
-```bash
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate
-
-# You should see (venv) in your prompt
-```
-
-### Step 3: Install Dependencies
-
-```bash
-# Make sure venv is activated (you should see (venv) in prompt)
-pip install -r requirements.txt
-```
-
-### Step 4: Verify Installation
-
-```bash
-python main.py --help
-```
-
----
-
-## 🚦 Quick Start
-
-### One-Command Setup (Recommended)
-
-**Windows:**
-```bash
-# Run setup script (automatically creates venv and installs dependencies)
-setup.bat
-```
-
-**Linux/macOS:**
-```bash
-# Make script executable
-chmod +x setup.sh
-
-# Run setup script
-./setup.sh
-```
-
-### Manual Setup
-
-**Step 1: Create Virtual Environment**
-
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Linux/macOS  
-python3 -m venv venv
-source venv/bin/activate
-```
-
-**Step 2: Install Dependencies**
-
-```bash
-pip install -r requirements.txt
-```
-
-**Step 3: Run Application**
-
-**Windows (Administrator):**
-```bash
-python main.py
-```
-
-**Linux/macOS (sudo):**
-```bash
-sudo python3 main.py
-```
-
-### Initial Configuration
-
-1. **Find Your Computer's IP Address**
-   - Windows: `ipconfig`
-   - Linux/macOS: `ifconfig` or `ip addr`
-   - Look for IPv4 address (e.g., 192.168.1.100)
-
-2. **Configure Device DNS Settings**
-   - Navigate to Network Settings on your device
-   - Set **Primary DNS** to your computer's IP
-   - Set **Secondary DNS** to `8.8.8.8` (Google DNS)
-
-3. **Verify Connection**
-   - Browse any website on your configured device
-   - Check the Live Logs tab for DNS queries
-   - Queries should appear in real-time
-
----
-
-## 📖 Usage Guide
-
-### 1. 📋 Live Logs Tab
-
-Monitor DNS queries in real-time with advanced filtering capabilities.
-
-**Features:**
-- ✅ Real-time query display
-- ✅ Color-coded status indicators
-- ✅ Search and filter functionality
-- ✅ Query type filtering
-
-**Color Codes:**
-- 🟢 **Green (Success)** - Query resolved successfully
-- 🔴 **Red (Blocked)** - Domain blocked by blocklist
-- 🟠 **Orange (Failed)** - Query failed or timed out
-- 🔵 **Blue (Cached)** - Response served from cache
-
-**Controls:**
-- **Filter by Domain/IP** - Search for specific entries
-- **Filter by Type** - Show only A, AAAA, CNAME, etc.
-- **Pause/Resume** - Stop live updates
-- **Clear Logs** - Remove all entries
-
-### 2. 📊 Statistics & Analytics
-
-View comprehensive network statistics and visual analytics.
-
-**Metrics Displayed:**
-- Total DNS queries
-- Success/failure/blocked rates
-- Cache hit rate
-- Unique IPs and domains
-- Average response time
-
-**Visual Charts:**
-1. **Query Type Distribution** - Pie chart of DNS record types
-2. **Top Active Devices** - Bar chart of most active IPs
-3. **Top Domains** - Most frequently requested domains
-
-**Auto-refresh:** Statistics update automatically when tab is selected
-
-### 3. 🚫 Blocklist Manager
-
-Manage blocked and allowed domains with ease.
-
-**Adding Domains:**
-```
-Method 1: Manual Entry
-- Click "➕ Add Blocked Domain"
-- Enter domain (e.g., ads.example.com)
-- Click OK
-
-Method 2: Load Defaults
-- Click "🔄 Load Default Ads/Trackers"
-- Pre-configured ad/tracker list loaded
-```
-
-**Wildcard Blocking:**
-```
-Block: doubleclick.net
-Also blocks:
-  - ads.doubleclick.net
-  - tracking.doubleclick.net
-  - any.subdomain.doubleclick.net
-```
-
-**Allowlist Override:**
-- Add domains to allowlist to bypass blocklist
-- Useful for accidentally blocked sites
-- Takes priority over blocklist
-
-### 4. ⚠️ Alerts Monitor
-
-Real-time security threat detection and alerting.
-
-**Alert Types:**
-
-| Alert | Severity | Description |
-|-------|----------|-------------|
-| EXCESSIVE_QUERIES | HIGH | >100 queries/minute from single IP |
-| SUSPICIOUS_DOMAIN | MEDIUM | Domain contains malware keywords |
-| DGA_DETECTED | HIGH | Possible domain generation algorithm |
-
-**Alert Actions:**
-- View alert details
-- Export alerts to log file
-- Clear alert history
-
----
-
-## ⚙️ Configuration
-
-### DNS Settings
-
-Edit `dns_server.py` to customize DNS behavior:
-
-```python
-# Upstream DNS server
-UPSTREAM_DNS = '8.8.8.8'  # Google DNS
-# Alternative: '1.1.1.1' (Cloudflare)
-# Alternative: '208.67.222.222' (OpenDNS)
-
-# DNS port
-DNS_PORT = 53
-
-# Query timeout
-TIMEOUT = 2  # seconds
-```
-
-### Cache Configuration
-
-Adjust cache settings in `dns_server.py`:
-
-```python
-class DNSCache:
-    def set(self, domain, qtype, response, ttl=300):
-        # TTL: Time to live in seconds
-        # Default: 300 seconds (5 minutes)
-        # Max: 3600 seconds (1 hour)
-```
-
-### Logging Configuration
-
-Modify log retention in `dns_server.py`:
-
-```python
-# Maximum log entries to keep in memory
-if len(all_logs) > 10000:
-    all_logs.pop(0)
-```
-
-### Blocklist Customization
-
-Edit default blocklist in `dns_server.py`:
-
-```python
-def load_default_blocklist(self):
-    common_ads = [
-        'doubleclick.net',
-        'googleadservices.com',
-        'googlesyndication.com',
-        # Add your domains here
-    ]
-```
-
----
-
-## 📁 Project Structure
-
-```
-NetGuard-DNS-Monitor/
-│
-├── 📄 main.py                    # Application entry point
-├── 🌐 dns_server.py              # Core DNS server logic
-├── 🖥️ gui.py                     # Tkinter GUI interface
-├── 📊 stats.py                   # Statistics computation
-│
-├── 📋 requirements.txt           # Python dependencies
-├── 🔒 .gitignore                 # Git ignore rules
-├── 📜 LICENSE                    # MIT License
-│
-├── 🚀 setup.py                   # Automated setup script (Python)
-├── 🪟 setup.bat                  # Windows setup script
-├── 🐧 setup.sh                   # Linux/macOS setup script
-│
-├── 📖 README.md                  # Project overview (this file)
-├── 📖 INSTALLATION.md            # Detailed setup guide
-├── 📖 USAGE.md                   # User manual
-├── 📖 QUICK_SETUP.md             # Quick start guide
-├── 📖 GIT_WORKFLOW.md            # Git commands and workflow
-├── 📖 CONTRIBUTING.md            # Contribution guidelines
-├── 📖 ARCHITECTURE.md            # Technical documentation
-├── 📖 CHANGELOG.md               # Version history
-├── 📖 PROJECT_SUMMARY.md         # Academic project summary
-└── 📖 FEATURES_ROADMAP.md        # Future enhancements
-```
-
-**Key Files:**
-- **setup.bat / setup.sh** - One-command installation scripts
-- **GIT_WORKFLOW.md** - Complete Git guide with commit messages
-- **FEATURES_ROADMAP.md** - Planned improvements and enhancements
+> 📖 **Deep dive:** See [ARCHITECTURE.md](ARCHITECTURE.md) for technical details
 
 ---
 
@@ -498,346 +429,342 @@ NetGuard-DNS-Monitor/
 
 | Technology | Purpose | Version |
 |-----------|---------|---------|
-| Python | Core language | 3.8+ |
-| tkinter | GUI framework | Built-in |
-| dnslib | DNS protocol handling | 0.9.23 |
-| matplotlib | Data visualization | 3.7.1 |
-| threading | Concurrent processing | Built-in |
-| socket | Network communication | Built-in |
+| **Python** | Core programming language | 3.8+ |
+| **dnslib** | DNS protocol handling | 0.9.23 |
+| **Tkinter** | GUI framework | Built-in |
+| **Matplotlib** | Charts and visualizations | 3.8.4 |
+| **Threading** | Concurrent request handling | Built-in |
+| **Socket** | Network communication | Built-in |
 
-### Key Algorithms
-
-#### 1. DNS Caching Algorithm
-```
-1. Receive DNS query
-2. Generate cache key (domain, type)
-3. Check if key exists in cache
-4. If exists and not expired:
-   - Return cached response
-   - Increment hit counter
-5. If not exists or expired:
-   - Forward to upstream DNS
-   - Cache response with TTL
-   - Increment miss counter
-6. Return response to client
-```
-
-#### 2. Anomaly Detection Algorithm
-```
-1. Track queries per IP with timestamps
-2. Clean entries older than 60 seconds
-3. If query count > 100 in 60s:
-   - Generate HIGH severity alert
-4. Check domain for suspicious keywords:
-   - 'torrent', 'crack', 'keygen', 'malware'
-5. If suspicious keyword found:
-   - Generate MEDIUM severity alert
-6. Store alerts (max 100)
-```
-
-#### 3. Blocklist Matching Algorithm
-```
-1. Normalize domain to lowercase
-2. Check if domain in allowlist:
-   - If yes, return NOT BLOCKED
-3. Check if domain in blocklist:
-   - If yes, return BLOCKED
-4. Check wildcard matches:
-   - Split domain into parts
-   - Check each partial match
-   - If any match, return BLOCKED
-5. Return NOT BLOCKED
-```
-
-### Thread Safety
-
-All shared resources are protected with threading locks:
-
-```python
-# Example from dns_server.py
-class DNSCache:
-    def __init__(self):
-        self.lock = threading.Lock()
-    
-    def get(self, domain, qtype):
-        with self.lock:
-            # Thread-safe cache access
-            ...
-```
-
-### Performance Optimizations
-
-1. **Multithreading** - Each DNS request handled in separate thread
-2. **DNS Caching** - Reduces upstream queries by ~40-60%
-3. **Efficient Data Structures** - Using sets for O(1) lookup
-4. **Memory Management** - Automatic log rotation
-5. **Query Batching** - GUI updates in batches (500ms)
-
----
-
-## 🔒 Security Features
-
-### 1. Domain Blocking
-
-**Protection Against:**
-- Malware distribution sites
-- Phishing domains
-- Ad networks
-- Tracking services
-- Command & Control servers
-
-### 2. Anomaly Detection
-
-**Detects:**
-- DNS tunneling attempts
-- Excessive query rates (DDoS)
-- Suspicious domain patterns
-- Potential malware callbacks
-
-### 3. Privacy Protection
-
-**Features:**
-- Block ad/tracking networks
-- Prevent data collection
-- Local DNS resolution
-- No query logging to external services
-
-### 4. Best Practices Implemented
-
-✅ Input validation on all user inputs  
-✅ Timeout handling for network operations  
-✅ Exception handling with graceful degradation  
-✅ Secure default configurations  
-✅ Principle of least privilege  
-
----
-
-## ⚡ Performance Optimization
-
-### Benchmarks
+### Performance Metrics
 
 | Metric | Without Cache | With Cache | Improvement |
 |--------|---------------|------------|-------------|
-| Avg Response Time | 45ms | 2ms | **95.6%** |
-| Queries/Second | ~200 | ~1000 | **400%** |
-| Network Usage | 100% | 40% | **60%** reduction |
+| Avg Response Time | 45ms | 2ms | **95.6% faster** |
+| Queries/Second | ~200 | ~1000 | **5x throughput** |
+| Network Usage | 100% | 40% | **60% reduction** |
 
-### Cache Hit Rates
-
-Typical cache hit rates:
-- **First hour:** 20-30%
-- **After 2 hours:** 50-60%
-- **Steady state:** 60-70%
+**Cache hit rates:**
+- First hour: 20-30%
+- After 2 hours: 50-60%
+- Steady state: 60-70%
 
 ### Scalability
 
-- Handles **1000+ concurrent connections**
-- Processes **10,000+ queries/minute**
-- Cache size: Up to **10,000 entries**
-- Log retention: **10,000 entries**
+- ✅ Handles **1000+ concurrent connections**
+- ✅ Processes **10,000+ queries/minute**
+- ✅ Cache size: Up to **10,000 entries**
+- ✅ Log retention: **10,000 entries** (auto-cleanup)
+
+### Security Features
+
+**Protection against:**
+- Malware distribution sites
+- Phishing domains
+- Ad and tracking networks
+- Command & Control servers
+- DNS tunneling attempts
+
+**Detection capabilities:**
+- Excessive query rates (DDoS indicators)
+- Suspicious domain patterns
+- Domain Generation Algorithms (DGA)
+- Anomalous network behavior
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues
+### "Permission Denied" Error
 
-#### 1. Port 53 Permission Error
-
-**Error:**
+**Problem:**
 ```
 ❌ Permission denied! Run as administrator/sudo
 ```
 
 **Solution:**
-- Windows: Right-click → Run as Administrator
-- Linux/macOS: Use `sudo python3 main.py`
+- **Windows:** Right-click Command Prompt → "Run as Administrator"
+- **Linux/macOS:** Use `sudo python3 main.py`
 
-#### 2. No DNS Queries Appearing
+### No DNS Queries Appearing
 
-**Possible Causes:**
-1. Device DNS not configured correctly
-2. Firewall blocking port 53
-3. Computer IP address changed
+**Checklist:**
+1. ✅ Is NetGuard running as admin/sudo?
+2. ✅ Did you set DNS on your device to your computer's IP?
+3. ✅ Is your computer's IP correct? (didn't change?)
+4. ✅ Is firewall allowing UDP port 53?
 
-**Solutions:**
+**Debug:**
 ```bash
-# Check firewall (Windows)
-netsh advfirewall firewall add rule name="DNS" dir=in action=allow protocol=UDP localport=53
+# Test DNS server locally
+nslookup google.com 127.0.0.1
 
-# Check firewall (Linux)
-sudo ufw allow 53/udp
+# Check if port 53 is listening
+# Windows:
+netstat -an | findstr :53
 
-# Verify DNS server is listening
-netstat -an | grep :53
+# Linux/macOS:
+sudo netstat -tulpn | grep :53
 ```
 
-#### 3. High CPU Usage
+### "Port 53 Already in Use"
 
-**Causes:**
-- Too many concurrent queries
-- Large log file
+**Problem:** Another service is using port 53
 
-**Solutions:**
-- Reduce log retention limit
-- Increase cache TTL
-- Clear logs periodically
+**Solution:**
+```bash
+# Windows - find and kill process
+netstat -ano | findstr :53
+taskkill /PID <process_id> /F
 
-#### 4. Cache Not Working
+# Linux/macOS - find and kill process
+sudo lsof -i :53
+sudo kill -9 <PID>
+```
 
-**Symptoms:**
-- All queries show as forwarded
-- No cache hits
+### App Freezes When Importing Blocklist
 
-**Solutions:**
-- Check cache stats: Cache → Cache Statistics
-- Verify TTL settings in code
-- Clear and restart cache
+**Problem:** Importing large lists from GitHub/URLs
 
-### Debug Mode
+**Solution:** Use the pre-installed blocklist instead!
+1. Copy content from `preinstalled-blocklist.json`
+2. Paste into `blocklist.json`
+3. Restart app
 
-Enable debug logging:
+> 📖 **More solutions:** See [INSTALLATION.md](INSTALLATION.md#troubleshooting) for complete guide
 
-```python
-# Add to dns_server.py
-import logging
-logging.basicConfig(level=logging.DEBUG)
+---
+
+## 📁 Project Structure
+
+```
+NetGuard-DNS-Monitor/
+│
+├── main.py                    # Application entry point
+├── dns_server.py              # Core DNS server logic (820 lines)
+├── gui.py                     # Tkinter GUI interface (1,150 lines)
+├── stats.py                   # Statistics computation (370 lines)
+├── cli.py                     # Command-line interface (optional)
+│
+├── requirements.txt           # Python dependencies
+├── preinstalled-blocklist.json # 64,292 domains ready to use!
+├── blocklist.json             # Active blocklist (create this)
+├── allowlist.json             # Allowed domains (auto-generated)
+│
+├── setup.py                   # Automated setup script
+├── setup.bat                  # Windows quick setup
+├── setup.sh                   # Linux/macOS quick setup
+│
+├── 📸 screenshots/               # Documentation screenshots
+│   ├── live-logs.png
+│   ├── statistics.png
+│   ├── blocklist.png
+│   └── alerts.png
+│
+| # ----Documentation files----
+├── README.md                 # This file
+├── QUICK_SETUP.md            # 5-minute setup guide
+├── INSTALLATION.md           # Detailed installation
+├── USAGE.md                  # Feature documentation
+├── ARCHITECTURE.md           # Technical deep dive
+├── CHANGELOG.md              # Version history
+└── PROJECT_SUMMARY.md        # Academic summary
+```
+
+**Total lines of code:** ~2,810 lines  
+**Development time:** 3 months  
+**Coffee consumed:** Too much ☕
+
+---
+
+## 🎓 Project Information
+
+### Academic Details
+
+**Project Type:** 1st Year Python Programming Project  
+**Module:** Introduction to Programming  
+**Institution:** Softwarica College of IT & E-Commerce  
+**Affiliation:** Coventry University, United Kingdom  
+**Academic Year:** 2025-2026  
+**Student:** Jhapendra Kandel  
+**Email:** jhapendrakandel10@gmail.com
+
+### Skills Demonstrated
+
+✅ **Python Programming Fundamentals**
+- Object-Oriented Programming (OOP)
+- Multithreading and concurrency
+- Exception handling and error management
+- File I/O and data persistence
+
+✅ **Network Programming**
+- Socket programming (UDP)
+- DNS protocol implementation
+- Client-server architecture
+- Network packet handling
+
+✅ **Software Development**
+- GUI design with Tkinter
+- Data visualization with Matplotlib
+- Algorithm design and optimization
+- Version control with Git/GitHub
+
+✅ **Security Concepts**
+- Threat detection algorithms
+- Pattern recognition
+- Input validation
+- Security best practices
+
+### What I Learned
+
+This project taught me way more than just coding:
+
+**Technical Skills:**
+- How DNS actually works (not just theory!)
+- Multi-threading is HARD but essential
+- Caching makes everything faster
+- Error handling saves lives (and your app!)
+
+**Real-World Experience:**
+- Privacy matters (so much tracking online!)
+- Performance optimization is an art
+- Documentation is as important as code
+- Testing on different platforms is crucial
+
+**The Struggle:**
+Not gonna lie - threading bugs almost made me give up. DNS protocol docs are confusing. GUI kept crashing. But Stack Overflow, YouTube tutorials, and lots of coffee got me through! 😅
+
+### Inspiration
+
+This project was heavily inspired by **[Pi-hole](https://pi-hole.net/)** - the amazing network-wide ad blocker. I wanted to understand how it works and build my own version as a learning experience. Big thanks to the Pi-hole team for the inspiration!
+
+### Citation
+
+If you use this project in your work, please cite:
+
+```
+Kandel, J. (2026). NetGuard DNS Monitor: A Python-based Real-time DNS 
+Monitoring and Network Security System. Softwarica College of IT & 
+E-Commerce (Coventry University). 
+GitHub: https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor
 ```
 
 ---
 
-## 🤝 Contributing
+## 📜 License
 
-We welcome contributions! Please see [CONTRIBUTING.md](docs/CONTRIBUTING.md) for details.
-
-### How to Contribute
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-### Development Setup
-
-```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/NetGuard-DNS-Monitor.git
-cd NetGuard-DNS-Monitor
-
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
-
-# Install development dependencies
-pip install -r requirements.txt
-pip install -r requirements-dev.txt  # If available
-
-# Run tests
-python -m pytest tests/
-```
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
 ```
-MIT License
-
-Copyright (c) 2026 Jhapendra kandel
+MIT License - Copyright (c) 2026 Jhapendra Kandel
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files...
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software...
 ```
+
+**TL;DR:** Do whatever you want with this code! If you use it for your project, a mention would be cool but not required. 😊
 
 ---
 
 ## 🙏 Acknowledgments
 
-### Inspiration
-- **Pi-hole** - Network-wide ad blocking
+### Inspiration & References
+- **[Pi-hole](https://pi-hole.net/)** - Network-wide ad blocking (main inspiration!)
 - **Unbound** - Validating, recursive DNS resolver
 - **DNSCrypt** - DNS encryption protocol
 
-### Technologies
+### Technologies & Libraries
 - **Python Software Foundation** - Python programming language
 - **Tk/Tcl** - GUI framework
-- **dnslib** - Python DNS library
+- **dnslib** - Python DNS library by Paul Chakravarti
 - **matplotlib** - Data visualization library
 
 ### Educational Resources
 - RFC 1035 - Domain Names Implementation
 - OWASP Top 10 - Security best practices
-- Computer Networks (Tanenbaum) - Networking fundamentals
+- Computer Networks by Andrew Tanenbaum
+- Real Python tutorials
+- Stack Overflow community
+
+### Personal Thanks
+- **Softwarica College** - For the project opportunity
+- **Coventry University** - Academic affiliation
+- **My Professors** - Guidance and feedback
+- **My Classmates** - Testing on their devices
+- **YouTube Tutorials** - Learned threading from them
+- **Stack Overflow** - Saved me countless times
+- **Coffee** - Essential fuel for late-night coding ☕
 
 ---
 
 ## 📧 Contact & Support
 
-**Project Maintainer:** Jhapendra kandel  
-**Email:** jhapendrakandel@example.com  
-**GitHub:** [@jhapendra-kandel](https://github.com/jhapendra-kandel)
+**Author:** Jhapendra Kandel  
+**Email:** jhapendrakandel10@gmail.com  
+**GitHub:** [@jhapendra-kandel](https://github.com/jhapendra-kandel)  
+**Institution:** Softwarica College of IT & E-Commerce
 
 ### Get Help
 
 - 📖 [Read the documentation](docs/)
 - 🐛 [Report a bug](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor/issues)
 - 💡 [Request a feature](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor/issues)
-- 💬 [Start a discussion](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor/discussions)
+- ⭐ [Star this repo](https://github.com/jhapendra-kandel/NetGuard-DNS-Monitor) if you found it helpful!
 
 ---
 
-## 🎓 Academic Information
-
-**Project Type:** 1st Year Python Programming Project  
-**Module:** Introduction to Programming  
-**Institution:** Softwarica College of IT & E-Commerce  
-**Affiliation:** Coventry University, UK  
-**Academic Year:** 2025-2026  
-
-**Skills Demonstrated:**
-- Python Programming Fundamentals
-- Object-Oriented Programming (OOP)
-- Network Programming with Sockets
-- Multithreaded Application Development
-- GUI Design & Implementation (Tkinter)
-- DNS Protocol Understanding
-- Data Structures and Algorithms
-- Software Documentation
-- Version Control (Git/GitHub)
-
----
-
-## 🗺️ Roadmap
+## 🗺️ Future Roadmap
 
 ### Version 2.1 (Planned)
-- [ ] HTTPS DNS support (DoH)
-- [ ] Machine learning-based anomaly detection
+- [ ] Dark mode UI theme
+- [ ] Database storage (SQLite) for unlimited logs
+- [ ] HTTPS DNS support (DNS-over-HTTPS)
+- [ ] Email alerts for critical threats
 - [ ] Custom alerting rules
-- [ ] RESTful API
 
-### Version 3.0 (Future)
-- [ ] Web-based dashboard
-- [ ] Multi-user support
-- [ ] Cloud sync
-- [ ] Mobile app companion
+### Version 3.0 (Future Vision)
+- [ ] Web-based dashboard (access from any device)
+- [ ] Machine learning-based anomaly detection
+- [ ] Mobile app companion (iOS/Android)
+- [ ] Cloud sync capabilities
+- [ ] Docker containerization
+
+> 📖 **Full roadmap:** See [Features_roadmap.md](Features_roadmap.md) for detailed plans
 
 ---
 
-## ⭐ Star History
+## ⭐ Show Your Support
 
-If you find this project helpful, please consider giving it a star! ⭐
+If you found this project helpful or learned something from it:
 
-[![Star History Chart](https://api.star-history.com/svg?repos=jhapendra-kandel/NetGuard-DNS-Monitor&type=Date)](https://star-history.com/#jhapendra-kandel/NetGuard-DNS-Monitor&Date)
+- ⭐ **Star this repository** on GitHub
+- 🍴 **Fork it** and try building your own features
+- 📢 **Share it** with classmates who might benefit
+- 💬 **Leave feedback** in the issues section
+- 📧 **Email me** your success stories!
+
+Every star motivates me to keep improving this project! 🚀
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for Cybersecurity Education**
+**Made with ❤️, ☕, and lots of debugging**
+
+*3 months of coding • 2,810 lines • Countless bugs fixed • 100% worth it!*
+
+**Powered by curiosity and caffeine** ☕
+
+---
 
 [⬆ Back to Top](#-netguard-dns-monitor-v20)
+
+---
+
+**NetGuard DNS Monitor** - Your Network's Guardian  
+*Protecting privacy, blocking ads, monitoring threats - one DNS query at a time*
 
 </div>
