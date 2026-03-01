@@ -18,7 +18,7 @@
 
 ## 📺 Watch It In Action
 
-[![NetGuard DNS Monitor Tutorial](https://img.youtube.com/vi/--Video-is-currnetly-in-progress--)](https://www.youtube.com/watch?v=Ill upload when ready)
+[![NetGuard DNS Monitor Demo](https://img.youtube.com/vi/ppbYP4b1JRA/maxresdefault.jpg)](https://youtu.be/ppbYP4b1JRA)
 
 *👆 Click to watch the complete video tutorial on YouTube*
 
